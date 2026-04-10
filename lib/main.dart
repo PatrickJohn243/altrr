@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:device_preview/device_preview.dart';
+import 'core/database/isar_service.dart';
 import 'core/router/app_router.dart';
 import 'core/theme/app_theme.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await IsarService.init();
   runApp(
     DevicePreview(
       enabled: true,

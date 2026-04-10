@@ -10,6 +10,7 @@ class QuestRowCard extends StatelessWidget {
   final String questTitle;
   final String date;
   final bool isSkipped;
+  final VoidCallback? onTap;
 
   const QuestRowCard({
     super.key,
@@ -18,15 +19,18 @@ class QuestRowCard extends StatelessWidget {
     required this.questTitle,
     required this.date,
     this.isSkipped = false,
+    this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
     final double opacity = isSkipped ? 0.07 : 1.0;
 
-    return Opacity(
-      opacity: opacity,
-      child: Container(
+    return GestureDetector(
+      onTap: onTap,
+      child: Opacity(
+        opacity: opacity,
+        child: Container(
         height: 72,
         decoration: const BoxDecoration(
           color: AppColors.bgSurface,
@@ -77,6 +81,7 @@ class QuestRowCard extends StatelessWidget {
               ],
             ),
           ),
+        ),
         ),
       ),
     );

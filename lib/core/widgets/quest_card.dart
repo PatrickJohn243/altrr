@@ -8,7 +8,7 @@ import '../theme/app_spacing.dart';
 class QuestCard extends StatelessWidget {
   final String questTitle;
   final String description;
-  final String hint;
+  final String? hint;
   final String expiryText;
   final bool assignedByAltrr;
   final VoidCallback? onComplete;
@@ -18,7 +18,7 @@ class QuestCard extends StatelessWidget {
     super.key,
     required this.questTitle,
     required this.description,
-    required this.hint,
+    this.hint,
     required this.expiryText,
     this.assignedByAltrr = false,
     this.onComplete,
@@ -95,20 +95,19 @@ class QuestCard extends StatelessWidget {
                   style: AppTypography.outfitSemiBold(20, AppColors.textPrimary),
                 ),
                 const SizedBox(height: AppSpacing.sm),
-                // Hint with left accent border
-                Container(
-                  padding: const EdgeInsets.only(left: 14),
-                  decoration: const BoxDecoration(
-                    border: Border(
-                      left: BorderSide(color: Color(0x4DC8F135), width: 2),
+                // Hint with left accent border — only shown when non-null
+                if (hint != null && hint!.isNotEmpty) ...[
+                  Container(
+                    padding: const EdgeInsets.only(left: 14),
+                    decoration: const BoxDecoration(
+                      border: Border(
+                        left: BorderSide(color: Color(0x4DC8F135), width: 2),
+                      ),
                     ),
+                    child: Text(hint!, style: AppTypography.bodyMedium),
                   ),
-                  child: Text(
-                    hint,
-                    style: AppTypography.bodyMedium,
-                  ),
-                ),
-                const SizedBox(height: AppSpacing.sm),
+                  const SizedBox(height: AppSpacing.sm),
+                ],
                 // Footer
                 Row(
                   children: [
