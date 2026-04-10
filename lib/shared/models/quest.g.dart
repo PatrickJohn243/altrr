@@ -1,0 +1,1923 @@
+// GENERATED CODE - DO NOT MODIFY BY HAND
+
+part of 'quest.dart';
+
+// **************************************************************************
+// IsarCollectionGenerator
+// **************************************************************************
+
+// coverage:ignore-file
+// ignore_for_file: duplicate_ignore, non_constant_identifier_names, constant_identifier_names, invalid_use_of_protected_member, unnecessary_cast, prefer_const_constructors, lines_longer_than_80_chars, require_trailing_commas, inference_failure_on_function_invocation, unnecessary_parenthesis, unnecessary_raw_strings, unnecessary_null_checks, join_return_with_assignment, prefer_final_locals, avoid_js_rounded_ints, avoid_positional_boolean_parameters, always_specify_types
+
+extension GetQuestCollection on Isar {
+  IsarCollection<Quest> get quests => this.collection();
+}
+
+const QuestSchema = CollectionSchema(
+  name: r'Quest',
+  id: 4554541312824334418,
+  properties: {
+    r'assignedAt': PropertySchema(
+      id: 0,
+      name: r'assignedAt',
+      type: IsarType.dateTime,
+    ),
+    r'assignedByAltrr': PropertySchema(
+      id: 1,
+      name: r'assignedByAltrr',
+      type: IsarType.bool,
+    ),
+    r'category': PropertySchema(
+      id: 2,
+      name: r'category',
+      type: IsarType.string,
+    ),
+    r'characterId': PropertySchema(
+      id: 3,
+      name: r'characterId',
+      type: IsarType.long,
+    ),
+    r'completedAt': PropertySchema(
+      id: 4,
+      name: r'completedAt',
+      type: IsarType.dateTime,
+    ),
+    r'description': PropertySchema(
+      id: 5,
+      name: r'description',
+      type: IsarType.string,
+    ),
+    r'expiresAt': PropertySchema(
+      id: 6,
+      name: r'expiresAt',
+      type: IsarType.dateTime,
+    ),
+    r'hint': PropertySchema(
+      id: 7,
+      name: r'hint',
+      type: IsarType.string,
+    ),
+    r'skippedAt': PropertySchema(
+      id: 8,
+      name: r'skippedAt',
+      type: IsarType.dateTime,
+    ),
+    r'status': PropertySchema(
+      id: 9,
+      name: r'status',
+      type: IsarType.string,
+      enumMap: _QueststatusEnumValueMap,
+    ),
+    r'title': PropertySchema(
+      id: 10,
+      name: r'title',
+      type: IsarType.string,
+    )
+  },
+  estimateSize: _questEstimateSize,
+  serialize: _questSerialize,
+  deserialize: _questDeserialize,
+  deserializeProp: _questDeserializeProp,
+  idName: r'id',
+  indexes: {
+    r'category': IndexSchema(
+      id: -7560358558326323820,
+      name: r'category',
+      unique: false,
+      replace: false,
+      properties: [
+        IndexPropertySchema(
+          name: r'category',
+          type: IndexType.hash,
+          caseSensitive: true,
+        )
+      ],
+    ),
+    r'assignedAt': IndexSchema(
+      id: -6202192226478979906,
+      name: r'assignedAt',
+      unique: false,
+      replace: false,
+      properties: [
+        IndexPropertySchema(
+          name: r'assignedAt',
+          type: IndexType.value,
+          caseSensitive: false,
+        )
+      ],
+    )
+  },
+  links: {},
+  embeddedSchemas: {},
+  getId: _questGetId,
+  getLinks: _questGetLinks,
+  attach: _questAttach,
+  version: '3.1.0+1',
+);
+
+int _questEstimateSize(
+  Quest object,
+  List<int> offsets,
+  Map<Type, List<int>> allOffsets,
+) {
+  var bytesCount = offsets.last;
+  bytesCount += 3 + object.category.length * 3;
+  bytesCount += 3 + object.description.length * 3;
+  {
+    final value = object.hint;
+    if (value != null) {
+      bytesCount += 3 + value.length * 3;
+    }
+  }
+  bytesCount += 3 + object.status.name.length * 3;
+  bytesCount += 3 + object.title.length * 3;
+  return bytesCount;
+}
+
+void _questSerialize(
+  Quest object,
+  IsarWriter writer,
+  List<int> offsets,
+  Map<Type, List<int>> allOffsets,
+) {
+  writer.writeDateTime(offsets[0], object.assignedAt);
+  writer.writeBool(offsets[1], object.assignedByAltrr);
+  writer.writeString(offsets[2], object.category);
+  writer.writeLong(offsets[3], object.characterId);
+  writer.writeDateTime(offsets[4], object.completedAt);
+  writer.writeString(offsets[5], object.description);
+  writer.writeDateTime(offsets[6], object.expiresAt);
+  writer.writeString(offsets[7], object.hint);
+  writer.writeDateTime(offsets[8], object.skippedAt);
+  writer.writeString(offsets[9], object.status.name);
+  writer.writeString(offsets[10], object.title);
+}
+
+Quest _questDeserialize(
+  Id id,
+  IsarReader reader,
+  List<int> offsets,
+  Map<Type, List<int>> allOffsets,
+) {
+  final object = Quest();
+  object.assignedAt = reader.readDateTime(offsets[0]);
+  object.assignedByAltrr = reader.readBool(offsets[1]);
+  object.category = reader.readString(offsets[2]);
+  object.characterId = reader.readLongOrNull(offsets[3]);
+  object.completedAt = reader.readDateTimeOrNull(offsets[4]);
+  object.description = reader.readString(offsets[5]);
+  object.expiresAt = reader.readDateTime(offsets[6]);
+  object.hint = reader.readStringOrNull(offsets[7]);
+  object.id = id;
+  object.skippedAt = reader.readDateTimeOrNull(offsets[8]);
+  object.status =
+      _QueststatusValueEnumMap[reader.readStringOrNull(offsets[9])] ??
+          QuestStatus.active;
+  object.title = reader.readString(offsets[10]);
+  return object;
+}
+
+P _questDeserializeProp<P>(
+  IsarReader reader,
+  int propertyId,
+  int offset,
+  Map<Type, List<int>> allOffsets,
+) {
+  switch (propertyId) {
+    case 0:
+      return (reader.readDateTime(offset)) as P;
+    case 1:
+      return (reader.readBool(offset)) as P;
+    case 2:
+      return (reader.readString(offset)) as P;
+    case 3:
+      return (reader.readLongOrNull(offset)) as P;
+    case 4:
+      return (reader.readDateTimeOrNull(offset)) as P;
+    case 5:
+      return (reader.readString(offset)) as P;
+    case 6:
+      return (reader.readDateTime(offset)) as P;
+    case 7:
+      return (reader.readStringOrNull(offset)) as P;
+    case 8:
+      return (reader.readDateTimeOrNull(offset)) as P;
+    case 9:
+      return (_QueststatusValueEnumMap[reader.readStringOrNull(offset)] ??
+          QuestStatus.active) as P;
+    case 10:
+      return (reader.readString(offset)) as P;
+    default:
+      throw IsarError('Unknown property with id $propertyId');
+  }
+}
+
+const _QueststatusEnumValueMap = {
+  r'active': r'active',
+  r'completed': r'completed',
+  r'skipped': r'skipped',
+};
+const _QueststatusValueEnumMap = {
+  r'active': QuestStatus.active,
+  r'completed': QuestStatus.completed,
+  r'skipped': QuestStatus.skipped,
+};
+
+Id _questGetId(Quest object) {
+  return object.id;
+}
+
+List<IsarLinkBase<dynamic>> _questGetLinks(Quest object) {
+  return [];
+}
+
+void _questAttach(IsarCollection<dynamic> col, Id id, Quest object) {
+  object.id = id;
+}
+
+extension QuestQueryWhereSort on QueryBuilder<Quest, Quest, QWhere> {
+  QueryBuilder<Quest, Quest, QAfterWhere> anyId() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(const IdWhereClause.any());
+    });
+  }
+
+  QueryBuilder<Quest, Quest, QAfterWhere> anyAssignedAt() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(
+        const IndexWhereClause.any(indexName: r'assignedAt'),
+      );
+    });
+  }
+}
+
+extension QuestQueryWhere on QueryBuilder<Quest, Quest, QWhereClause> {
+  QueryBuilder<Quest, Quest, QAfterWhereClause> idEqualTo(Id id) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IdWhereClause.between(
+        lower: id,
+        upper: id,
+      ));
+    });
+  }
+
+  QueryBuilder<Quest, Quest, QAfterWhereClause> idNotEqualTo(Id id) {
+    return QueryBuilder.apply(this, (query) {
+      if (query.whereSort == Sort.asc) {
+        return query
+            .addWhereClause(
+              IdWhereClause.lessThan(upper: id, includeUpper: false),
+            )
+            .addWhereClause(
+              IdWhereClause.greaterThan(lower: id, includeLower: false),
+            );
+      } else {
+        return query
+            .addWhereClause(
+              IdWhereClause.greaterThan(lower: id, includeLower: false),
+            )
+            .addWhereClause(
+              IdWhereClause.lessThan(upper: id, includeUpper: false),
+            );
+      }
+    });
+  }
+
+  QueryBuilder<Quest, Quest, QAfterWhereClause> idGreaterThan(Id id,
+      {bool include = false}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(
+        IdWhereClause.greaterThan(lower: id, includeLower: include),
+      );
+    });
+  }
+
+  QueryBuilder<Quest, Quest, QAfterWhereClause> idLessThan(Id id,
+      {bool include = false}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(
+        IdWhereClause.lessThan(upper: id, includeUpper: include),
+      );
+    });
+  }
+
+  QueryBuilder<Quest, Quest, QAfterWhereClause> idBetween(
+    Id lowerId,
+    Id upperId, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IdWhereClause.between(
+        lower: lowerId,
+        includeLower: includeLower,
+        upper: upperId,
+        includeUpper: includeUpper,
+      ));
+    });
+  }
+
+  QueryBuilder<Quest, Quest, QAfterWhereClause> categoryEqualTo(
+      String category) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.equalTo(
+        indexName: r'category',
+        value: [category],
+      ));
+    });
+  }
+
+  QueryBuilder<Quest, Quest, QAfterWhereClause> categoryNotEqualTo(
+      String category) {
+    return QueryBuilder.apply(this, (query) {
+      if (query.whereSort == Sort.asc) {
+        return query
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'category',
+              lower: [],
+              upper: [category],
+              includeUpper: false,
+            ))
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'category',
+              lower: [category],
+              includeLower: false,
+              upper: [],
+            ));
+      } else {
+        return query
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'category',
+              lower: [category],
+              includeLower: false,
+              upper: [],
+            ))
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'category',
+              lower: [],
+              upper: [category],
+              includeUpper: false,
+            ));
+      }
+    });
+  }
+
+  QueryBuilder<Quest, Quest, QAfterWhereClause> assignedAtEqualTo(
+      DateTime assignedAt) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.equalTo(
+        indexName: r'assignedAt',
+        value: [assignedAt],
+      ));
+    });
+  }
+
+  QueryBuilder<Quest, Quest, QAfterWhereClause> assignedAtNotEqualTo(
+      DateTime assignedAt) {
+    return QueryBuilder.apply(this, (query) {
+      if (query.whereSort == Sort.asc) {
+        return query
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'assignedAt',
+              lower: [],
+              upper: [assignedAt],
+              includeUpper: false,
+            ))
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'assignedAt',
+              lower: [assignedAt],
+              includeLower: false,
+              upper: [],
+            ));
+      } else {
+        return query
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'assignedAt',
+              lower: [assignedAt],
+              includeLower: false,
+              upper: [],
+            ))
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'assignedAt',
+              lower: [],
+              upper: [assignedAt],
+              includeUpper: false,
+            ));
+      }
+    });
+  }
+
+  QueryBuilder<Quest, Quest, QAfterWhereClause> assignedAtGreaterThan(
+    DateTime assignedAt, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.between(
+        indexName: r'assignedAt',
+        lower: [assignedAt],
+        includeLower: include,
+        upper: [],
+      ));
+    });
+  }
+
+  QueryBuilder<Quest, Quest, QAfterWhereClause> assignedAtLessThan(
+    DateTime assignedAt, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.between(
+        indexName: r'assignedAt',
+        lower: [],
+        upper: [assignedAt],
+        includeUpper: include,
+      ));
+    });
+  }
+
+  QueryBuilder<Quest, Quest, QAfterWhereClause> assignedAtBetween(
+    DateTime lowerAssignedAt,
+    DateTime upperAssignedAt, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.between(
+        indexName: r'assignedAt',
+        lower: [lowerAssignedAt],
+        includeLower: includeLower,
+        upper: [upperAssignedAt],
+        includeUpper: includeUpper,
+      ));
+    });
+  }
+}
+
+extension QuestQueryFilter on QueryBuilder<Quest, Quest, QFilterCondition> {
+  QueryBuilder<Quest, Quest, QAfterFilterCondition> assignedAtEqualTo(
+      DateTime value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'assignedAt',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Quest, Quest, QAfterFilterCondition> assignedAtGreaterThan(
+    DateTime value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'assignedAt',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Quest, Quest, QAfterFilterCondition> assignedAtLessThan(
+    DateTime value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'assignedAt',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Quest, Quest, QAfterFilterCondition> assignedAtBetween(
+    DateTime lower,
+    DateTime upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'assignedAt',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+      ));
+    });
+  }
+
+  QueryBuilder<Quest, Quest, QAfterFilterCondition> assignedByAltrrEqualTo(
+      bool value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'assignedByAltrr',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Quest, Quest, QAfterFilterCondition> categoryEqualTo(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'category',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Quest, Quest, QAfterFilterCondition> categoryGreaterThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'category',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Quest, Quest, QAfterFilterCondition> categoryLessThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'category',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Quest, Quest, QAfterFilterCondition> categoryBetween(
+    String lower,
+    String upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'category',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Quest, Quest, QAfterFilterCondition> categoryStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'category',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Quest, Quest, QAfterFilterCondition> categoryEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'category',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Quest, Quest, QAfterFilterCondition> categoryContains(
+      String value,
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'category',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Quest, Quest, QAfterFilterCondition> categoryMatches(
+      String pattern,
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'category',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Quest, Quest, QAfterFilterCondition> categoryIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'category',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<Quest, Quest, QAfterFilterCondition> categoryIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'category',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<Quest, Quest, QAfterFilterCondition> characterIdIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'characterId',
+      ));
+    });
+  }
+
+  QueryBuilder<Quest, Quest, QAfterFilterCondition> characterIdIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'characterId',
+      ));
+    });
+  }
+
+  QueryBuilder<Quest, Quest, QAfterFilterCondition> characterIdEqualTo(
+      int? value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'characterId',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Quest, Quest, QAfterFilterCondition> characterIdGreaterThan(
+    int? value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'characterId',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Quest, Quest, QAfterFilterCondition> characterIdLessThan(
+    int? value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'characterId',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Quest, Quest, QAfterFilterCondition> characterIdBetween(
+    int? lower,
+    int? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'characterId',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+      ));
+    });
+  }
+
+  QueryBuilder<Quest, Quest, QAfterFilterCondition> completedAtIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'completedAt',
+      ));
+    });
+  }
+
+  QueryBuilder<Quest, Quest, QAfterFilterCondition> completedAtIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'completedAt',
+      ));
+    });
+  }
+
+  QueryBuilder<Quest, Quest, QAfterFilterCondition> completedAtEqualTo(
+      DateTime? value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'completedAt',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Quest, Quest, QAfterFilterCondition> completedAtGreaterThan(
+    DateTime? value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'completedAt',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Quest, Quest, QAfterFilterCondition> completedAtLessThan(
+    DateTime? value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'completedAt',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Quest, Quest, QAfterFilterCondition> completedAtBetween(
+    DateTime? lower,
+    DateTime? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'completedAt',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+      ));
+    });
+  }
+
+  QueryBuilder<Quest, Quest, QAfterFilterCondition> descriptionEqualTo(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'description',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Quest, Quest, QAfterFilterCondition> descriptionGreaterThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'description',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Quest, Quest, QAfterFilterCondition> descriptionLessThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'description',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Quest, Quest, QAfterFilterCondition> descriptionBetween(
+    String lower,
+    String upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'description',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Quest, Quest, QAfterFilterCondition> descriptionStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'description',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Quest, Quest, QAfterFilterCondition> descriptionEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'description',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Quest, Quest, QAfterFilterCondition> descriptionContains(
+      String value,
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'description',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Quest, Quest, QAfterFilterCondition> descriptionMatches(
+      String pattern,
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'description',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Quest, Quest, QAfterFilterCondition> descriptionIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'description',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<Quest, Quest, QAfterFilterCondition> descriptionIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'description',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<Quest, Quest, QAfterFilterCondition> expiresAtEqualTo(
+      DateTime value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'expiresAt',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Quest, Quest, QAfterFilterCondition> expiresAtGreaterThan(
+    DateTime value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'expiresAt',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Quest, Quest, QAfterFilterCondition> expiresAtLessThan(
+    DateTime value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'expiresAt',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Quest, Quest, QAfterFilterCondition> expiresAtBetween(
+    DateTime lower,
+    DateTime upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'expiresAt',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+      ));
+    });
+  }
+
+  QueryBuilder<Quest, Quest, QAfterFilterCondition> hintIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'hint',
+      ));
+    });
+  }
+
+  QueryBuilder<Quest, Quest, QAfterFilterCondition> hintIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'hint',
+      ));
+    });
+  }
+
+  QueryBuilder<Quest, Quest, QAfterFilterCondition> hintEqualTo(
+    String? value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'hint',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Quest, Quest, QAfterFilterCondition> hintGreaterThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'hint',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Quest, Quest, QAfterFilterCondition> hintLessThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'hint',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Quest, Quest, QAfterFilterCondition> hintBetween(
+    String? lower,
+    String? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'hint',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Quest, Quest, QAfterFilterCondition> hintStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'hint',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Quest, Quest, QAfterFilterCondition> hintEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'hint',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Quest, Quest, QAfterFilterCondition> hintContains(String value,
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'hint',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Quest, Quest, QAfterFilterCondition> hintMatches(String pattern,
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'hint',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Quest, Quest, QAfterFilterCondition> hintIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'hint',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<Quest, Quest, QAfterFilterCondition> hintIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'hint',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<Quest, Quest, QAfterFilterCondition> idEqualTo(Id value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'id',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Quest, Quest, QAfterFilterCondition> idGreaterThan(
+    Id value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'id',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Quest, Quest, QAfterFilterCondition> idLessThan(
+    Id value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'id',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Quest, Quest, QAfterFilterCondition> idBetween(
+    Id lower,
+    Id upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'id',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+      ));
+    });
+  }
+
+  QueryBuilder<Quest, Quest, QAfterFilterCondition> skippedAtIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'skippedAt',
+      ));
+    });
+  }
+
+  QueryBuilder<Quest, Quest, QAfterFilterCondition> skippedAtIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'skippedAt',
+      ));
+    });
+  }
+
+  QueryBuilder<Quest, Quest, QAfterFilterCondition> skippedAtEqualTo(
+      DateTime? value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'skippedAt',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Quest, Quest, QAfterFilterCondition> skippedAtGreaterThan(
+    DateTime? value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'skippedAt',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Quest, Quest, QAfterFilterCondition> skippedAtLessThan(
+    DateTime? value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'skippedAt',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Quest, Quest, QAfterFilterCondition> skippedAtBetween(
+    DateTime? lower,
+    DateTime? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'skippedAt',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+      ));
+    });
+  }
+
+  QueryBuilder<Quest, Quest, QAfterFilterCondition> statusEqualTo(
+    QuestStatus value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'status',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Quest, Quest, QAfterFilterCondition> statusGreaterThan(
+    QuestStatus value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'status',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Quest, Quest, QAfterFilterCondition> statusLessThan(
+    QuestStatus value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'status',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Quest, Quest, QAfterFilterCondition> statusBetween(
+    QuestStatus lower,
+    QuestStatus upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'status',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Quest, Quest, QAfterFilterCondition> statusStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'status',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Quest, Quest, QAfterFilterCondition> statusEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'status',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Quest, Quest, QAfterFilterCondition> statusContains(String value,
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'status',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Quest, Quest, QAfterFilterCondition> statusMatches(
+      String pattern,
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'status',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Quest, Quest, QAfterFilterCondition> statusIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'status',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<Quest, Quest, QAfterFilterCondition> statusIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'status',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<Quest, Quest, QAfterFilterCondition> titleEqualTo(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'title',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Quest, Quest, QAfterFilterCondition> titleGreaterThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'title',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Quest, Quest, QAfterFilterCondition> titleLessThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'title',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Quest, Quest, QAfterFilterCondition> titleBetween(
+    String lower,
+    String upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'title',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Quest, Quest, QAfterFilterCondition> titleStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'title',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Quest, Quest, QAfterFilterCondition> titleEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'title',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Quest, Quest, QAfterFilterCondition> titleContains(String value,
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'title',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Quest, Quest, QAfterFilterCondition> titleMatches(String pattern,
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'title',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Quest, Quest, QAfterFilterCondition> titleIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'title',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<Quest, Quest, QAfterFilterCondition> titleIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'title',
+        value: '',
+      ));
+    });
+  }
+}
+
+extension QuestQueryObject on QueryBuilder<Quest, Quest, QFilterCondition> {}
+
+extension QuestQueryLinks on QueryBuilder<Quest, Quest, QFilterCondition> {}
+
+extension QuestQuerySortBy on QueryBuilder<Quest, Quest, QSortBy> {
+  QueryBuilder<Quest, Quest, QAfterSortBy> sortByAssignedAt() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'assignedAt', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Quest, Quest, QAfterSortBy> sortByAssignedAtDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'assignedAt', Sort.desc);
+    });
+  }
+
+  QueryBuilder<Quest, Quest, QAfterSortBy> sortByAssignedByAltrr() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'assignedByAltrr', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Quest, Quest, QAfterSortBy> sortByAssignedByAltrrDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'assignedByAltrr', Sort.desc);
+    });
+  }
+
+  QueryBuilder<Quest, Quest, QAfterSortBy> sortByCategory() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'category', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Quest, Quest, QAfterSortBy> sortByCategoryDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'category', Sort.desc);
+    });
+  }
+
+  QueryBuilder<Quest, Quest, QAfterSortBy> sortByCharacterId() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'characterId', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Quest, Quest, QAfterSortBy> sortByCharacterIdDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'characterId', Sort.desc);
+    });
+  }
+
+  QueryBuilder<Quest, Quest, QAfterSortBy> sortByCompletedAt() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'completedAt', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Quest, Quest, QAfterSortBy> sortByCompletedAtDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'completedAt', Sort.desc);
+    });
+  }
+
+  QueryBuilder<Quest, Quest, QAfterSortBy> sortByDescription() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'description', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Quest, Quest, QAfterSortBy> sortByDescriptionDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'description', Sort.desc);
+    });
+  }
+
+  QueryBuilder<Quest, Quest, QAfterSortBy> sortByExpiresAt() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'expiresAt', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Quest, Quest, QAfterSortBy> sortByExpiresAtDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'expiresAt', Sort.desc);
+    });
+  }
+
+  QueryBuilder<Quest, Quest, QAfterSortBy> sortByHint() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'hint', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Quest, Quest, QAfterSortBy> sortByHintDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'hint', Sort.desc);
+    });
+  }
+
+  QueryBuilder<Quest, Quest, QAfterSortBy> sortBySkippedAt() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'skippedAt', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Quest, Quest, QAfterSortBy> sortBySkippedAtDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'skippedAt', Sort.desc);
+    });
+  }
+
+  QueryBuilder<Quest, Quest, QAfterSortBy> sortByStatus() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'status', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Quest, Quest, QAfterSortBy> sortByStatusDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'status', Sort.desc);
+    });
+  }
+
+  QueryBuilder<Quest, Quest, QAfterSortBy> sortByTitle() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'title', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Quest, Quest, QAfterSortBy> sortByTitleDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'title', Sort.desc);
+    });
+  }
+}
+
+extension QuestQuerySortThenBy on QueryBuilder<Quest, Quest, QSortThenBy> {
+  QueryBuilder<Quest, Quest, QAfterSortBy> thenByAssignedAt() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'assignedAt', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Quest, Quest, QAfterSortBy> thenByAssignedAtDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'assignedAt', Sort.desc);
+    });
+  }
+
+  QueryBuilder<Quest, Quest, QAfterSortBy> thenByAssignedByAltrr() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'assignedByAltrr', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Quest, Quest, QAfterSortBy> thenByAssignedByAltrrDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'assignedByAltrr', Sort.desc);
+    });
+  }
+
+  QueryBuilder<Quest, Quest, QAfterSortBy> thenByCategory() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'category', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Quest, Quest, QAfterSortBy> thenByCategoryDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'category', Sort.desc);
+    });
+  }
+
+  QueryBuilder<Quest, Quest, QAfterSortBy> thenByCharacterId() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'characterId', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Quest, Quest, QAfterSortBy> thenByCharacterIdDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'characterId', Sort.desc);
+    });
+  }
+
+  QueryBuilder<Quest, Quest, QAfterSortBy> thenByCompletedAt() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'completedAt', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Quest, Quest, QAfterSortBy> thenByCompletedAtDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'completedAt', Sort.desc);
+    });
+  }
+
+  QueryBuilder<Quest, Quest, QAfterSortBy> thenByDescription() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'description', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Quest, Quest, QAfterSortBy> thenByDescriptionDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'description', Sort.desc);
+    });
+  }
+
+  QueryBuilder<Quest, Quest, QAfterSortBy> thenByExpiresAt() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'expiresAt', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Quest, Quest, QAfterSortBy> thenByExpiresAtDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'expiresAt', Sort.desc);
+    });
+  }
+
+  QueryBuilder<Quest, Quest, QAfterSortBy> thenByHint() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'hint', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Quest, Quest, QAfterSortBy> thenByHintDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'hint', Sort.desc);
+    });
+  }
+
+  QueryBuilder<Quest, Quest, QAfterSortBy> thenById() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'id', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Quest, Quest, QAfterSortBy> thenByIdDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'id', Sort.desc);
+    });
+  }
+
+  QueryBuilder<Quest, Quest, QAfterSortBy> thenBySkippedAt() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'skippedAt', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Quest, Quest, QAfterSortBy> thenBySkippedAtDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'skippedAt', Sort.desc);
+    });
+  }
+
+  QueryBuilder<Quest, Quest, QAfterSortBy> thenByStatus() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'status', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Quest, Quest, QAfterSortBy> thenByStatusDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'status', Sort.desc);
+    });
+  }
+
+  QueryBuilder<Quest, Quest, QAfterSortBy> thenByTitle() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'title', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Quest, Quest, QAfterSortBy> thenByTitleDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'title', Sort.desc);
+    });
+  }
+}
+
+extension QuestQueryWhereDistinct on QueryBuilder<Quest, Quest, QDistinct> {
+  QueryBuilder<Quest, Quest, QDistinct> distinctByAssignedAt() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'assignedAt');
+    });
+  }
+
+  QueryBuilder<Quest, Quest, QDistinct> distinctByAssignedByAltrr() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'assignedByAltrr');
+    });
+  }
+
+  QueryBuilder<Quest, Quest, QDistinct> distinctByCategory(
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'category', caseSensitive: caseSensitive);
+    });
+  }
+
+  QueryBuilder<Quest, Quest, QDistinct> distinctByCharacterId() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'characterId');
+    });
+  }
+
+  QueryBuilder<Quest, Quest, QDistinct> distinctByCompletedAt() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'completedAt');
+    });
+  }
+
+  QueryBuilder<Quest, Quest, QDistinct> distinctByDescription(
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'description', caseSensitive: caseSensitive);
+    });
+  }
+
+  QueryBuilder<Quest, Quest, QDistinct> distinctByExpiresAt() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'expiresAt');
+    });
+  }
+
+  QueryBuilder<Quest, Quest, QDistinct> distinctByHint(
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'hint', caseSensitive: caseSensitive);
+    });
+  }
+
+  QueryBuilder<Quest, Quest, QDistinct> distinctBySkippedAt() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'skippedAt');
+    });
+  }
+
+  QueryBuilder<Quest, Quest, QDistinct> distinctByStatus(
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'status', caseSensitive: caseSensitive);
+    });
+  }
+
+  QueryBuilder<Quest, Quest, QDistinct> distinctByTitle(
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'title', caseSensitive: caseSensitive);
+    });
+  }
+}
+
+extension QuestQueryProperty on QueryBuilder<Quest, Quest, QQueryProperty> {
+  QueryBuilder<Quest, int, QQueryOperations> idProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'id');
+    });
+  }
+
+  QueryBuilder<Quest, DateTime, QQueryOperations> assignedAtProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'assignedAt');
+    });
+  }
+
+  QueryBuilder<Quest, bool, QQueryOperations> assignedByAltrrProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'assignedByAltrr');
+    });
+  }
+
+  QueryBuilder<Quest, String, QQueryOperations> categoryProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'category');
+    });
+  }
+
+  QueryBuilder<Quest, int?, QQueryOperations> characterIdProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'characterId');
+    });
+  }
+
+  QueryBuilder<Quest, DateTime?, QQueryOperations> completedAtProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'completedAt');
+    });
+  }
+
+  QueryBuilder<Quest, String, QQueryOperations> descriptionProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'description');
+    });
+  }
+
+  QueryBuilder<Quest, DateTime, QQueryOperations> expiresAtProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'expiresAt');
+    });
+  }
+
+  QueryBuilder<Quest, String?, QQueryOperations> hintProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'hint');
+    });
+  }
+
+  QueryBuilder<Quest, DateTime?, QQueryOperations> skippedAtProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'skippedAt');
+    });
+  }
+
+  QueryBuilder<Quest, QuestStatus, QQueryOperations> statusProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'status');
+    });
+  }
+
+  QueryBuilder<Quest, String, QQueryOperations> titleProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'title');
+    });
+  }
+}
