@@ -1,8 +1,10 @@
 import 'package:isar/isar.dart';
 import 'package:path_provider/path_provider.dart';
-import '../../shared/characters/character_roster.dart';
+import '../../shared/generation/character/character_roster.dart';
 import '../../shared/models/character.dart';
 import '../../shared/models/quest.dart';
+import '../../shared/models/earned_title.dart';
+import '../../shared/models/user_profile.dart';
 
 /// App-wide Isar singleton.
 ///
@@ -16,7 +18,7 @@ class IsarService {
   static Future<void> init() async {
     final dir = await getApplicationDocumentsDirectory();
     instance = await Isar.open(
-      [QuestSchema, CharacterSchema],
+      [QuestSchema, CharacterSchema, UserProfileSchema, EarnedTitleSchema],
       directory: dir.path,
     );
     await _seedRosterIfEmpty();

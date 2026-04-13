@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_typography.dart';
@@ -10,6 +11,8 @@ class ProfileCard extends StatelessWidget {
   final String memberSince;
   final int streakDays;
   final String flavorText;
+  final String? avatarPath;
+  final VoidCallback? onEditTap;
 
   const ProfileCard({
     super.key,
@@ -18,6 +21,8 @@ class ProfileCard extends StatelessWidget {
     required this.memberSince,
     required this.streakDays,
     required this.flavorText,
+    this.avatarPath,
+    this.onEditTap,
   });
 
   @override
@@ -39,12 +44,14 @@ class ProfileCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 // Avatar + edit badge
-                SizedBox(
-                  width: 60,
-                  height: 67,
-                  child: Stack(
-                    clipBehavior: Clip.none,
-                    children: [
+                GestureDetector(
+                  onTap: onEditTap,
+                  child: SizedBox(
+                    width: 60,
+                    height: 67,
+                    child: Stack(
+                      clipBehavior: Clip.none,
+                      children: [
                       Container(
                         width: 60,
                         height: 60,
@@ -56,12 +63,21 @@ class ProfileCard extends StatelessWidget {
                             width: 2,
                           ),
                         ),
-                        child: Center(
-                          child: Text(
-                            initials,
-                            style: AppTypography.unboundedBlack(20, AppColors.accent),
-                          ),
-                        ),
+                        clipBehavior: Clip.antiAlias,
+                        child: avatarPath != null
+                            ? Image.file(
+                                File(avatarPath!),
+                                fit: BoxFit.cover,
+                                width: 60,
+                                height: 60,
+                              )
+                            : Center(
+                                child: Text(
+                                  initials,
+                                  style: AppTypography.unboundedBlack(
+                                      20, AppColors.accent),
+                                ),
+                              ),
                       ),
                       Positioned(
                         bottom: -1,
@@ -83,6 +99,7 @@ class ProfileCard extends StatelessWidget {
                       ),
                     ],
                   ),
+                ),
                 ),
                 const SizedBox(width: 16),
                 // Name + streak

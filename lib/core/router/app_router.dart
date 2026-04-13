@@ -13,7 +13,12 @@ import '../../features/quests/pages/quest_detail/quest_detail_screen.dart';
 import '../../features/quests/pages/timer/timer_screen.dart';
 import '../../features/quests/pages/quest_submission/quest_submission_screen.dart';
 import '../../features/home/pages/streak/streak_screen.dart';
+import '../../features/home/pages/edit_profile/edit_profile_screen.dart';
+import '../../features/home/pages/all_titles/all_titles_screen.dart';
+import '../../features/quests/pages/all_quests/all_quests_screen.dart';
+import '../../features/home/pages/title_detail/title_detail_screen.dart';
 import '../../shared/models/quest.dart';
+import '../../shared/models/earned_title.dart';
 
 final appRouter = GoRouter(
   initialLocation: '/home',
@@ -72,6 +77,23 @@ final appRouter = GoRouter(
     GoRoute(
       path: '/streak',
       builder: (context, state) => const StreakScreen(),
+    ),
+    GoRoute(
+      path: '/edit-profile',
+      builder: (context, state) => const EditProfileScreen(),
+    ),
+    GoRoute(
+      path: '/titles',
+      builder: (context, state) => const AllTitlesScreen(),
+    ),
+    GoRoute(
+      path: '/all-quests',
+      builder: (context, state) => const AllQuestsScreen(),
+    ),
+    GoRoute(
+      path: '/title',
+      builder: (context, state) =>
+          TitleDetailScreen(title: state.extra as EarnedTitle),
     ),
   ],
 );

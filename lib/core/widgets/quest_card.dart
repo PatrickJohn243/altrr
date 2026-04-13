@@ -38,7 +38,8 @@ class QuestCard extends StatelessWidget {
             padding: const EdgeInsets.all(AppSpacing.cardPadding),
             decoration: const BoxDecoration(
               color: AppColors.accent,
-              borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.card)),
+              borderRadius:
+                  BorderRadius.vertical(top: Radius.circular(AppRadius.card)),
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -50,13 +51,17 @@ class QuestCard extends StatelessWidget {
                       height: 6,
                       decoration: const BoxDecoration(
                         color: AppColors.questCardTextMuted,
-                        borderRadius: BorderRadius.all(Radius.circular(AppRadius.dot)),
+                        borderRadius:
+                            BorderRadius.all(Radius.circular(AppRadius.dot)),
                       ),
                     ),
                     const SizedBox(width: 4),
                     Text(
-                      assignedByAltrr ? 'Assigned by ALTRR' : 'Anonymously assigned',
-                      style: AppTypography.outfitSemiBold(12, AppColors.questCardTextMuted),
+                      assignedByAltrr
+                          ? 'Assigned by ALTRR'
+                          : 'Anonymously assigned',
+                      style: AppTypography.outfitSemiBold(
+                          12, AppColors.questCardTextMuted),
                     ),
                   ],
                 ),
@@ -71,7 +76,8 @@ class QuestCard extends StatelessWidget {
             padding: const EdgeInsets.all(AppSpacing.cardPadding),
             decoration: const BoxDecoration(
               color: AppColors.bgPrimary,
-              borderRadius: BorderRadius.vertical(bottom: Radius.circular(AppRadius.card)),
+              borderRadius: BorderRadius.vertical(
+                  bottom: Radius.circular(AppRadius.card)),
               border: Border(
                 top: BorderSide(color: AppColors.borderSubtle),
                 left: BorderSide(color: AppColors.borderSubtle),
@@ -92,7 +98,8 @@ class QuestCard extends StatelessWidget {
                 // Description
                 Text(
                   description,
-                  style: AppTypography.outfitSemiBold(20, AppColors.textPrimary),
+                  style:
+                      AppTypography.outfitSemiBold(20, AppColors.textPrimary),
                 ),
                 const SizedBox(height: AppSpacing.sm),
                 // Hint with left accent border — only shown when non-null
@@ -111,7 +118,8 @@ class QuestCard extends StatelessWidget {
                 // Footer
                 Row(
                   children: [
-                    const Icon(Icons.access_time, size: 12, color: AppColors.textMuted),
+                    const Icon(Icons.access_time,
+                        size: 12, color: AppColors.textMuted),
                     const SizedBox(width: 5),
                     Expanded(
                       child: Text(expiryText, style: AppTypography.bodyMedium),
@@ -122,12 +130,14 @@ class QuestCard extends StatelessWidget {
                       height: 28,
                       decoration: BoxDecoration(
                         color: AppColors.bgElevated,
-                        borderRadius: const BorderRadius.all(Radius.circular(14)),
+                        borderRadius:
+                            const BorderRadius.all(Radius.circular(14)),
                         border: Border.all(color: AppColors.borderMid),
                       ),
                       child: IconButton(
                         padding: EdgeInsets.zero,
-                        icon: const Icon(Icons.info_outline, size: 12, color: AppColors.textMuted),
+                        icon: const Icon(Icons.info_outline,
+                            size: 12, color: AppColors.textMuted),
                         onPressed: onSkip,
                       ),
                     ),
@@ -137,9 +147,11 @@ class QuestCard extends StatelessWidget {
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.accent,
                         foregroundColor: AppColors.textInverse,
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 9),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 9),
                         shape: const RoundedRectangleBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(AppRadius.button)),
+                          borderRadius: BorderRadius.all(
+                              Radius.circular(AppRadius.button)),
                         ),
                         elevation: 0,
                       ),

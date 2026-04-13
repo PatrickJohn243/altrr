@@ -31,4 +31,8 @@ class AppColors {
 
   // Profile card
   static const Color profileCardBg = accent;
+
+  // Semantic
+  static const Color danger = Color(0xFFFF5454);
+  static const Color dangerDim = Color(0x33FF5454);
 }

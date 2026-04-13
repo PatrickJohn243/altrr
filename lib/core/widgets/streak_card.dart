@@ -47,11 +47,13 @@ class StreakCard extends StatelessWidget {
             children: [
               Text(
                 'Keep it up!',
-                style: AppTypography.unboundedExtraBold(12, AppColors.textPrimary),
+                style:
+                    AppTypography.unboundedExtraBold(12, AppColors.textPrimary),
               ),
               Row(
                 children: [
-                  const Text('🔥', style: TextStyle(fontSize: 12)),
+                  const Icon(Icons.local_fire_department,
+                      size: 16, color: AppColors.textMuted),
                   const SizedBox(width: 4),
                   Text(
                     '$streakCount day streak',
