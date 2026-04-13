@@ -25,7 +25,6 @@ class DateSectionWidget extends StatelessWidget {
                 category: entry.category,
                 questTitle: entry.title,
                 date: entry.date,
-                isSkipped: entry.isSkipped,
                 onTap: () => context.push('/quest', extra: entry.quest),
               ),
             )),

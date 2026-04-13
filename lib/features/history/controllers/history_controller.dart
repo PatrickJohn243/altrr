@@ -11,7 +11,6 @@ class QuestEntry {
   final String category;
   final String title;
   final String date;
-  final bool isSkipped;
   final IconData icon;
   final Quest quest;
 
@@ -21,7 +20,6 @@ class QuestEntry {
     required this.date,
     required this.icon,
     required this.quest,
-    this.isSkipped = false,
   });
 }
 
@@ -50,8 +48,7 @@ class HistoryController extends ChangeNotifier {
   Future<void> _load() async {
     final all = await _isar.quests
         .filter()
-        .not()
-        .statusEqualTo(QuestStatus.active)
+        .statusEqualTo(QuestStatus.completed)
         .sortByAssignedAtDesc()
         .findAll();
 
@@ -62,7 +59,7 @@ class HistoryController extends ChangeNotifier {
     // Group by calendar day (using completedAt/skippedAt, falling back to assignedAt).
     final Map<DateTime, List<Quest>> byDay = {};
     for (final q in all) {
-      final date = _day(q.completedAt ?? q.skippedAt ?? q.assignedAt);
+      final date = _day(q.completedAt ?? q.assignedAt);
       byDay.putIfAbsent(date, () => []).add(q);
     }
 
@@ -84,7 +81,7 @@ class HistoryController extends ChangeNotifier {
       }
 
       final entries = byDay[day]!.map((q) {
-        final dt = q.completedAt ?? q.skippedAt ?? q.assignedAt;
+        final dt = q.completedAt ?? q.assignedAt;
         const months = [
           'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
           'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
@@ -94,7 +91,6 @@ class HistoryController extends ChangeNotifier {
           title: q.title,
           date: '${months[dt.month - 1]} ${dt.day}',
           icon: _iconForCategory(q.category),
-          isSkipped: q.status == QuestStatus.skipped,
           quest: q,
         );
       }).toList();

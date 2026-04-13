@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_typography.dart';
 import '../../../core/theme/app_spacing.dart';
@@ -6,6 +7,7 @@ import '../../../core/widgets/app_bar_main.dart';
 import '../../../core/widgets/navbar.dart';
 import '../../../core/widgets/section_header.dart';
 import '../../../core/widgets/settings_card.dart';
+import '../../../core/services/alert_service.dart';
 import '../controllers/settings_controller.dart';
 
 class SettingsScreen extends StatefulWidget {
@@ -37,11 +39,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       body: SafeArea(
         child: Column(
           children: [
-            AppBarMain(
-              greeting: 'Good evening',
-              username: 'Adventurer',
-              initials: 'AV',
-            ),
+            AppBarMain(),
             Expanded(
               child: SingleChildScrollView(
                 padding: const EdgeInsets.symmetric(
@@ -56,7 +54,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           color: AppColors.textMuted, size: 18),
                       label: 'Edit profile',
                       sublabel: 'Update your name and details',
-                      onTap: () {},
+                      onTap: () => context.push('/edit-profile'),
                     ),
                     const SizedBox(height: AppSpacing.sm),
                     SettingsCard(
@@ -105,7 +103,19 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     SizedBox(
                       width: double.infinity,
                       child: OutlinedButton(
-                        onPressed: () {},
+                        onPressed: () => AlertService.show(
+                          context,
+                          title: 'Sign out?',
+                          message: 'You will be returned to the start.',
+                          actions: [
+                            AlertAction(
+                              label: 'Sign out',
+                              style: AlertActionStyle.danger,
+                              onTap: () {}, // TODO: implement sign out
+                            ),
+                            AlertAction(label: 'Cancel'),
+                          ],
+                        ),
                         style: OutlinedButton.styleFrom(
                           foregroundColor: AppColors.textDisabled,
                           side: const BorderSide(color: AppColors.borderMid),
