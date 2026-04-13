@@ -7,28 +7,28 @@
 
 import '../core/phrase.dart';
 
-import '../activities/physical/actions.dart';
-import '../activities/physical/notes.dart';
-import '../activities/mental/actions.dart';
-import '../activities/mental/notes.dart';
-import '../activities/social/actions.dart';
-import '../activities/social/notes.dart';
-import '../activities/cooking/actions.dart';
-import '../activities/cooking/notes.dart';
-import '../activities/learning/actions.dart';
-import '../activities/learning/notes.dart';
-import '../activities/explore/actions.dart';
-import '../activities/explore/notes.dart';
-import '../activities/hobby/actions.dart';
-import '../activities/hobby/notes.dart';
-import '../activities/reflection/actions.dart';
-import '../activities/reflection/notes.dart';
+import 'activities/physical/actions.dart';
+import 'activities/physical/notes.dart';
+import 'activities/mental/actions.dart';
+import 'activities/mental/notes.dart';
+import 'activities/social/actions.dart';
+import 'activities/social/notes.dart';
+import 'activities/cooking/actions.dart';
+import 'activities/cooking/notes.dart';
+import 'activities/learning/actions.dart';
+import 'activities/learning/notes.dart';
+import 'activities/explore/actions.dart';
+import 'activities/explore/notes.dart';
+import 'activities/hobby/actions.dart';
+import 'activities/hobby/notes.dart';
+import 'activities/reflection/actions.dart';
+import 'activities/reflection/notes.dart';
 
-import '../shared/openers.dart';
-import '../shared/closings.dart';
-import '../shared/durations.dart';
-import '../shared/settings.dart';
-import '../shared/universal_lines.dart';
+import 'phrases/openers.dart';
+import 'phrases/closings.dart';
+import 'phrases/durations.dart';
+import 'phrases/settings.dart';
+import 'phrases/universal_lines.dart';
 
 export '../core/phrase.dart';
 
