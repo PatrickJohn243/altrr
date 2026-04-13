@@ -10,13 +10,16 @@ import '../../../../shared/models/quest.dart';
 
 // ── Difficulty ────────────────────────────────────────────────────────────────
 
-enum _Difficulty { easy, moderate, hard }
+enum _Difficulty { easy, easyMod, moderate, modHard, hard }
 
-const _difficultyLabels = ['Easy', 'Moderate', 'Hard'];
+// Only indices 0, 2, 4 show labels; 1 and 3 are empty.
+const _difficultyLabels = ['Easy', '', 'Moderate', '', 'Hard'];
 
 const _difficultyColors = [
   Color(0xFFC8F135), // lime — easy
+  Color(0xFFE8D31A), // lime→amber blend
   Color(0xFFFFB800), // amber — moderate
+  Color(0xFFFF8226), // amber→red blend
   Color(0xFFFF4C4C), // red — hard
 ];
 
@@ -385,8 +388,8 @@ class _QuestSubmissionScreenState extends State<QuestSubmissionScreen> {
                 child: Slider(
                   value: idx.toDouble(),
                   min: 0,
-                  max: 2,
-                  divisions: 2,
+                  max: 4,
+                  divisions: 4,
                   onChanged: (v) => setState(
                     () => _difficulty = _Difficulty.values[v.round()],
                   ),
@@ -397,14 +400,22 @@ class _QuestSubmissionScreenState extends State<QuestSubmissionScreen> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: List.generate(
-                    3,
-                    (i) => Text(
-                      _difficultyLabels[i],
-                      style: AppTypography.outfitMedium(
-                        11,
-                        i == idx
-                            ? _difficultyColors[i]
-                            : AppColors.textMuted,
+                    5,
+                    (i) => SizedBox(
+                      width: 52,
+                      child: Text(
+                        _difficultyLabels[i],
+                        style: AppTypography.outfitMedium(
+                          11,
+                          i == idx
+                              ? _difficultyColors[i]
+                              : AppColors.textMuted,
+                        ),
+                        textAlign: i == 0
+                            ? TextAlign.left
+                            : i == 4
+                                ? TextAlign.right
+                                : TextAlign.center,
                       ),
                     ),
                   ),

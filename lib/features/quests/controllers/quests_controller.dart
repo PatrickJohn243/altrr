@@ -1,16 +1,27 @@
+import 'dart:math';
 import 'package:flutter/foundation.dart';
 import 'package:isar/isar.dart';
 import '../../../core/database/isar_service.dart';
-import '../../../shared/generation/balance/balance_tracker.dart';
+import '../../../shared/generation/quest/balance_tracker.dart';
 import '../../../shared/generation/quest/quest_generator.dart';
+import '../../../shared/generation/title/title_controller.dart';
+import '../../../shared/generation/title/title_generator.dart';
+import '../../../shared/models/earned_title.dart';
 import '../../../shared/models/quest.dart';
 
 class QuestsController extends ChangeNotifier {
   /// The currently active quest loaded from Isar.
   Quest? activeQuest;
 
+  /// The 5 most recently completed quests — shown on the quests screen.
+  List<Quest> recentCompleted = [];
+
   /// Balance result for the active quest (character + category + weights).
   BalanceResult? currentBalance;
+
+  /// Titles earned during the most recent quest completion.
+  /// Cleared when [clearLastEarnedTitles] is called (e.g. after UI shows them).
+  List<EarnedTitle> lastEarnedTitles = const [];
 
   /// True while an async operation is in progress.
   bool isLoading = false;
@@ -41,13 +52,10 @@ class QuestsController extends ChangeNotifier {
       return;
     }
 
-    // Expired quest — mark skipped before assigning a fresh one.
+    // Expired quest — discard it (not recorded) and assign a fresh one.
     if (existing != null) {
       await _isar.writeTxn(() async {
-        existing
-          ..status = QuestStatus.skipped
-          ..skippedAt = DateTime.now();
-        await _isar.quests.put(existing);
+        await _isar.quests.delete(existing.id);
       });
     }
 
@@ -65,9 +73,51 @@ class QuestsController extends ChangeNotifier {
     _resolveQuest(QuestStatus.completed);
   }
 
+  /// Clears [lastEarnedTitles] after the UI has displayed them.
+  void clearLastEarnedTitles() {
+    lastEarnedTitles = const [];
+    notifyListeners();
+  }
+
+  /// [DEBUG] Generates a title for the active quest's category and a random
+  /// tier — bypassing all condition checks. Used for UI testing only.
+  Future<void> debugGenerateTitle() async {
+    final quest = activeQuest;
+    if (quest == null) return;
+
+    final rng = Random();
+    final tier = 1 + rng.nextInt(3); // 1, 2, or 3
+
+    final generated = TitleGenerator.generateQuestCount(
+      category: quest.category,
+      tier: tier,
+      rng: rng,
+    );
+    if (generated == null) return;
+
+    final title = EarnedTitle()
+      ..titleText = generated.titleText
+      ..subtextA = generated.subtextA
+      ..subtextB = generated.subtextB
+      ..gachaSubtext = generated.gachaSubtext
+      ..category = generated.category
+      ..tier = generated.tier
+      ..titleType = generated.titleType
+      ..condition = generated.condition
+      ..earnedAt = DateTime.now()
+      ..isSeen = false;
+
+    await _isar.writeTxn(() async {
+      await _isar.earnedTitles.put(title);
+    });
+
+    lastEarnedTitles = [title];
+    notifyListeners();
+  }
+
   void skipQuest() {
     if (activeQuest == null) return;
-    _resolveQuest(QuestStatus.skipped);
+    _discardAndAssign();
   }
 
   // ── Private ────────────────────────────────────────────────────────────────
@@ -79,12 +129,27 @@ class QuestsController extends ChangeNotifier {
 
     await _isar.writeTxn(() async {
       quest.status = resolution;
-      if (resolution == QuestStatus.completed) {
-        quest.completedAt = DateTime.now();
-      } else {
-        quest.skippedAt = DateTime.now();
-      }
+      quest.completedAt = DateTime.now();
       await _isar.quests.put(quest);
+    });
+
+    lastEarnedTitles = await TitleController.checkAndAward(
+      completedQuest: quest,
+      isar: _isar,
+    );
+
+    await _assignNewQuest();
+  }
+
+  /// Discards the active quest without recording it, then assigns a new one.
+  Future<void> _discardAndAssign() async {
+    final quest = activeQuest!;
+    isLoading = true;
+    lastEarnedTitles = const [];
+    notifyListeners();
+
+    await _isar.writeTxn(() async {
+      await _isar.quests.delete(quest.id);
     });
 
     await _assignNewQuest();
@@ -96,6 +161,12 @@ class QuestsController extends ChangeNotifier {
         .filter()
         .statusEqualTo(QuestStatus.completed)
         .findAll();
+
+    // Keep the 5 most recent for the quests screen preview.
+    recentCompleted = (completed..sort((a, b) =>
+        (b.completedAt ?? b.assignedAt).compareTo(a.completedAt ?? a.assignedAt)))
+        .take(5)
+        .toList();
 
     final history = completed
         .where((q) => q.completedAt != null)

@@ -189,13 +189,6 @@ class _QuestDetailScreenState extends State<QuestDetailScreen> {
                               accent: true,
                             ),
                           ],
-                          if (quest.skippedAt != null) ...[
-                            const SizedBox(height: AppSpacing.sm),
-                            _DateRow(
-                              label: 'SKIPPED',
-                              date: quest.skippedAt!,
-                            ),
-                          ],
                         ],
                       ),
                     ),
@@ -260,10 +253,10 @@ class _StatusPill extends StatelessWidget {
           AppColors.accent,
           AppColors.textInverse,
         ),
-      QuestStatus.skipped => (
-          'SKIPPED',
-          AppColors.bgElevated,
-          AppColors.textDisabled,
+      _ => (
+          'ACTIVE',
+          AppColors.accentSubtle,
+          AppColors.accent,
         ),
     };
 

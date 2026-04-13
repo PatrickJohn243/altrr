@@ -5,15 +5,50 @@ import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/app_typography.dart';
 import '../../../core/widgets/app_bar_main.dart';
 import '../../../core/widgets/quest_card.dart';
+import '../../../core/widgets/quest_row_card.dart';
 import '../../../core/widgets/stat_card.dart';
-import '../../../core/widgets/side_quest_card.dart';
-import '../../../core/widgets/title_card.dart';
 import '../../../core/widgets/section_header.dart';
 import '../controllers/quests_controller.dart';
 import '../controllers/quests_controller_provider.dart';
+import '../widgets/title_earned_sheet.dart';
 
-class QuestsScreen extends StatelessWidget {
+class QuestsScreen extends StatefulWidget {
   const QuestsScreen({super.key});
+
+  @override
+  State<QuestsScreen> createState() => _QuestsScreenState();
+}
+
+class _QuestsScreenState extends State<QuestsScreen> {
+  QuestsController? _controller;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final next = QuestsControllerProvider.of(context);
+    if (next != _controller) {
+      _controller?.removeListener(_onControllerChanged);
+      _controller = next;
+      _controller!.addListener(_onControllerChanged);
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller?.removeListener(_onControllerChanged);
+    super.dispose();
+  }
+
+  void _onControllerChanged() {
+    final c = _controller;
+    if (c == null || c.lastEarnedTitles.isEmpty) return;
+    final titles = List.of(c.lastEarnedTitles);
+    c.clearLastEarnedTitles();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      TitleEarnedSheet.show(context, titles: titles);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -24,9 +59,6 @@ class QuestsScreen extends StatelessWidget {
         child: Column(
           children: [
             AppBarMain(
-              greeting: 'Good evening,',
-              username: 'Adventurer',
-              initials: 'AV',
               onAvatarTap: () => context.push('/profile'),
               onBellTap: () {},
             ),
@@ -68,7 +100,7 @@ class QuestsScreen extends StatelessWidget {
                         _DebugChip(controller: controller),
                         const SizedBox(height: AppSpacing.md),
 
-                        // ── Generate button ─────────────────────────────────
+                        // ── Generate quest button ───────────────────────────
                         SizedBox(
                           width: double.infinity,
                           child: OutlinedButton.icon(
@@ -88,6 +120,32 @@ class QuestsScreen extends StatelessWidget {
                               'Generate Quest',
                               style: AppTypography.unboundedBold(
                                   12, AppColors.accent),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: AppSpacing.sm),
+
+                        // ── TEST: Generate title button ─────────────────────
+                        SizedBox(
+                          width: double.infinity,
+                          child: OutlinedButton.icon(
+                            style: OutlinedButton.styleFrom(
+                              foregroundColor: AppColors.textDisabled,
+                              side:
+                                  const BorderSide(color: AppColors.borderMid),
+                              padding: const EdgeInsets.symmetric(vertical: 12),
+                              shape: const RoundedRectangleBorder(
+                                borderRadius: BorderRadius.all(
+                                    Radius.circular(AppRadius.button)),
+                              ),
+                            ),
+                            onPressed: controller.debugGenerateTitle,
+                            icon: const Icon(Icons.workspace_premium_outlined,
+                                size: 16),
+                            label: Text(
+                              'Test Title',
+                              style: AppTypography.unboundedBold(
+                                  12, AppColors.textDisabled),
                             ),
                           ),
                         ),
@@ -136,79 +194,32 @@ class QuestsScreen extends StatelessWidget {
                         ),
                         const SizedBox(height: AppSpacing.sectionGap),
 
-                        // ── QUESTS ──────────────────────────────────────────
-                        SectionHeader(label: 'QUESTS', seeAll: () {}),
-                        const SizedBox(height: AppSpacing.itemGap),
-                        SideQuestCard(
-                          icon: const Icon(Icons.restaurant,
-                              size: 20, color: AppColors.textMuted),
-                          category: 'Food',
-                          questTitle: "A Cook's First Attempt",
-                          description:
-                              "Create a dish you've never eaten before.",
-                          date: 'Today',
-                          totalDots: 3,
-                          activeDot: 0,
-                          onStart: () {},
+                        // ── COMPLETED ───────────────────────────────────────
+                        SectionHeader(
+                          label: 'COMPLETED',
+                          seeAll: () => context.push('/all-quests'),
                         ),
                         const SizedBox(height: AppSpacing.itemGap),
-                        SideQuestCard(
-                          icon: const Icon(Icons.directions_walk,
-                              size: 20, color: AppColors.textMuted),
-                          category: 'Travel',
-                          questTitle: 'City Explorer',
-                          description:
-                              'Visit a part of the city you have never been to.',
-                          date: 'Tomorrow',
-                          totalDots: 3,
-                          activeDot: 1,
-                          onStart: () {},
-                        ),
-                        const SizedBox(height: AppSpacing.sectionGap),
-
-                        // ── TITLES ──────────────────────────────────────────
-                        SectionHeader(label: 'TITLES', seeAll: () {}),
-                        const SizedBox(height: AppSpacing.itemGap),
-                        SizedBox(
-                          height: 155,
-                          child: ListView(
-                            scrollDirection: Axis.horizontal,
-                            clipBehavior: Clip.none,
-                            children: const [
-                              TitleCard(
-                                icon: Icon(Icons.restaurant,
-                                    size: 20, color: AppColors.accent),
-                                category: 'Food',
-                                titleName: 'Conversationalist',
-                                questCount: 2,
-                              ),
-                              SizedBox(width: AppSpacing.itemGap),
-                              TitleCard(
-                                icon: Icon(Icons.people,
-                                    size: 20, color: AppColors.accent),
-                                category: 'People',
-                                titleName: 'The Wanderer',
-                                questCount: 3,
-                              ),
-                              SizedBox(width: AppSpacing.itemGap),
-                              TitleCard(
-                                icon: Icon(Icons.fitness_center,
-                                    size: 20, color: AppColors.accent),
-                                category: 'Gym',
-                                titleName: 'Iron Will',
-                                questCount: 1,
-                              ),
-                              SizedBox(width: AppSpacing.itemGap),
-                              TitleCard(
-                                icon: Icon(Icons.travel_explore,
-                                    size: 20, color: AppColors.accent),
-                                category: 'Travel',
-                                titleName: 'Pathfinder',
-                                questCount: 2,
-                              ),
-                            ],
-                          ),
-                        ),
+                        if (controller.recentCompleted.isEmpty)
+                          const SizedBox.shrink()
+                        else
+                          ...controller.recentCompleted.map((q) => Padding(
+                                padding: const EdgeInsets.only(
+                                    bottom: AppSpacing.itemGap),
+                                child: QuestRowCard(
+                                  icon: Icon(
+                                    _iconForCategory(q.category),
+                                    size: 18,
+                                    color: AppColors.textMuted,
+                                  ),
+                                  category: q.category,
+                                  questTitle: q.title,
+                                  date: _formatDate(
+                                      q.completedAt ?? q.assignedAt),
+                                  onTap: () =>
+                                      context.push('/quest', extra: q),
+                                ),
+                              )),
                         const SizedBox(height: AppSpacing.sectionGap),
                       ],
                     ),
@@ -221,6 +232,30 @@ class QuestsScreen extends StatelessWidget {
       ),
     );
   }
+}
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
+
+IconData _iconForCategory(String category) {
+  switch (category.toLowerCase()) {
+    case 'physical':   return Icons.fitness_center;
+    case 'mental':     return Icons.psychology;
+    case 'social':     return Icons.people;
+    case 'cooking':    return Icons.restaurant;
+    case 'learning':   return Icons.school;
+    case 'explore':    return Icons.travel_explore;
+    case 'hobby':      return Icons.palette;
+    case 'reflection': return Icons.self_improvement;
+    default:           return Icons.star_outline;
+  }
+}
+
+String _formatDate(DateTime dt) {
+  const months = [
+    'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+    'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
+  ];
+  return '${months[dt.month - 1]} ${dt.day}';
 }
 
 // ── Debug chip ────────────────────────────────────────────────────────────────
