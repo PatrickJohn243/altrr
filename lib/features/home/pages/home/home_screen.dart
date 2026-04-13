@@ -52,9 +52,6 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Column(
           children: [
             AppBarMain(
-              greeting: 'Good evening,',
-              username: 'Adventurer',
-              initials: 'AV',
               onAvatarTap: () => context.push('/profile'),
               onBellTap: () => context.push('/notifications'),
             ),
@@ -103,7 +100,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         const SizedBox(height: AppSpacing.sectionGap),
 
                         // ── YOUR TITLES ──────────────────────────────────────
-                        SectionHeader(label: 'YOUR TITLES', seeAll: () {}),
+                        SectionHeader(label: 'YOUR TITLES', seeAll: () => context.push('/titles')),
                         const SizedBox(height: AppSpacing.itemGap),
                         SizedBox(
                           height: 155,
@@ -140,7 +137,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         const SizedBox(height: AppSpacing.sectionGap),
 
                         // ── RECENT QUESTS ────────────────────────────────────
-                        SectionHeader(label: 'RECENT QUESTS', seeAll: () {}),
+                        SectionHeader(label: 'RECENT QUESTS', seeAll: () => context.push('/all-quests')),
                         const SizedBox(height: AppSpacing.itemGap),
                         if (homeCtrl.recentQuests.isEmpty)
                           const SizedBox.shrink()
@@ -156,10 +153,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                   ),
                                   category: q.category,
                                   questTitle: q.title,
-                                  date: _formatDate(q.completedAt ??
-                                      q.skippedAt ??
-                                      q.assignedAt),
-                                  isSkipped: q.status == QuestStatus.skipped,
+                                  date: _formatDate(
+                                      q.completedAt ?? q.assignedAt),
                                   onTap: () => context.push('/quest', extra: q),
                                 ),
                               )),

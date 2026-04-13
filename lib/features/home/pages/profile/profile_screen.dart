@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import '../../../../core/controllers/user_profile_provider.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/widgets/app_bar_back.dart';
@@ -13,6 +15,8 @@ class ProfileScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final profile = UserProfileProvider.of(context);
+
     return Scaffold(
       backgroundColor: AppColors.bgPrimary,
       body: SafeArea(
@@ -27,11 +31,13 @@ class ProfileScreen extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     ProfileCard(
-                      initials: 'PJ',
-                      username: 'Adventurer',
+                      initials: profile.initials,
+                      username: profile.name,
+                      avatarPath: profile.avatarPath,
                       memberSince: 'Member since Jan 2025',
                       streakDays: 7,
                       flavorText: 'Someone who shows up.',
+                      onEditTap: () => context.push('/edit-profile'),
                     ),
                     const SizedBox(height: AppSpacing.xl),
                     const SectionHeader(label: 'YOUR NUMBERS'),
@@ -73,7 +79,7 @@ class ProfileScreen extends StatelessWidget {
                       isNew: false,
                     ),
                     const SizedBox(height: AppSpacing.xl),
-                    SectionHeader(label: 'ALL TITLES', seeAll: () {}),
+                    SectionHeader(label: 'ALL TITLES', seeAll: () => context.push('/titles')),
                     const SizedBox(height: AppSpacing.md),
                     SizedBox(
                       height: 155,

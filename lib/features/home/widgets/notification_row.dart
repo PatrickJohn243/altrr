@@ -21,88 +21,93 @@ class NotificationRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: isUnread ? AppColors.accentSubtle : AppColors.bgSurface,
-        borderRadius: const BorderRadius.all(Radius.circular(AppRadius.card)),
-        border: Border(
-          top: const BorderSide(color: AppColors.borderSubtle),
-          left: BorderSide(
-            color: isUnread ? AppColors.accentDim : AppColors.borderSubtle,
-            width: isUnread ? 2 : 1,
+    return Opacity(
+      opacity: isUnread ? 1.0 : 0.6,
+      child: Container(
+        decoration: BoxDecoration(
+          color: AppColors.bgSurface,
+          borderRadius: const BorderRadius.all(Radius.circular(AppRadius.card)),
+          border: Border(
+            top: const BorderSide(color: AppColors.borderSubtle),
+            left: BorderSide(
+              color: AppColors.borderSubtle,
+              width: 1,
+            ),
+            right: const BorderSide(color: AppColors.borderSubtle),
+            bottom: const BorderSide(color: AppColors.borderSubtle, width: 3),
           ),
-          right: const BorderSide(color: AppColors.borderSubtle),
-          bottom: const BorderSide(color: AppColors.borderSubtle, width: 3),
         ),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(
-          horizontal: AppSpacing.cardPaddingMd,
-          vertical: 14,
-        ),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Icon box
-            Container(
-              width: 36,
-              height: 36,
-              decoration: BoxDecoration(
-                color: isUnread
-                    ? const Color(0x1AC8F135)
-                    : AppColors.bgElevated,
-                borderRadius:
-                    const BorderRadius.all(Radius.circular(AppRadius.icon)),
-              ),
-              child: Icon(
-                icon,
-                size: 18,
-                color: isUnread ? AppColors.accent : AppColors.textMuted,
-              ),
-            ),
-            const SizedBox(width: 14),
-            // Text
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Text(
-                          title,
-                          style: isUnread
-                              ? AppTypography.unboundedBold(
-                                  12, AppColors.textPrimary)
-                              : AppTypography.cardTitle,
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      Text(
-                        time,
-                        style: AppTypography.outfitMedium(
-                            10, AppColors.textMuted),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 4),
-                  Text(subtitle, style: AppTypography.bodyMedium),
-                ],
-              ),
-            ),
-            if (isUnread) ...[
-              const SizedBox(width: 8),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(
+            horizontal: AppSpacing.cardPaddingMd,
+            vertical: 14,
+          ),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Icon box
               Container(
-                width: 6,
-                height: 6,
-                margin: const EdgeInsets.only(top: 4),
-                decoration: const BoxDecoration(
-                  color: AppColors.accent,
-                  shape: BoxShape.circle,
+                width: 36,
+                height: 36,
+                decoration: BoxDecoration(
+                  color: AppColors.bgElevated,
+                  borderRadius:
+                      const BorderRadius.all(Radius.circular(AppRadius.icon)),
+                ),
+                child: Icon(
+                  icon,
+                  size: 18,
+                  color: AppColors.textMuted,
                 ),
               ),
+              const SizedBox(width: 14),
+              // Text
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            title,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: AppTypography.cardTitle,
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          time,
+                          style: AppTypography.outfitMedium(
+                              10, AppColors.textMuted),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      subtitle,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: AppTypography.bodyMedium,
+                    ),
+                  ],
+                ),
+              ),
+              // if (isUnread) ...[
+              //   const SizedBox(width: 8),
+              //   Container(
+              //     width: 6,
+              //     height: 6,
+              //     margin: const EdgeInsets.only(top: 4),
+              //     decoration: const BoxDecoration(
+              //       color: AppColors.accent,
+              //       shape: BoxShape.circle,
+              //     ),
+              //   ),
+              // ],
             ],
-          ],
+          ),
         ),
       ),
     );

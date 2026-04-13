@@ -125,7 +125,7 @@ class _StreakScreenState extends State<StreakScreen> {
                             ),
                             child: IntrinsicHeight(
                               child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
                                   const SizedBox(height: AppSpacing.xl),
                                   _buildHeader(),
@@ -155,8 +155,10 @@ class _StreakScreenState extends State<StreakScreen> {
   Widget _buildHeader() {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        const Text('🔥', style: TextStyle(fontSize: 36)),
+        const Icon(Icons.local_fire_department,
+            size: 64, color: AppColors.textMuted),
         const SizedBox(width: AppSpacing.md),
         Text(
           '$_streakCount',
@@ -180,6 +182,7 @@ class _StreakScreenState extends State<StreakScreen> {
     return Text(
       _getMessage(_streakCount),
       style: AppTypography.outfitMedium(15, AppColors.textMuted),
+      textAlign: TextAlign.center,
     );
   }
 
@@ -196,7 +199,7 @@ class _StreakScreenState extends State<StreakScreen> {
 
   Widget _buildFooter() {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Text(
           'ALTRR',

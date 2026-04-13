@@ -15,19 +15,17 @@ class HomeController extends ChangeNotifier {
 
   HomeController(this._questsController) {
     _load();
-    // Reload whenever a quest is completed or skipped.
+    // Reload whenever a quest is completed.
     _questsController.addListener(_load);
   }
 
   Future<void> _load() async {
     final now = DateTime.now();
 
-    // All completed + skipped quests, sorted newest first.
+    // All completed quests, sorted newest first.
     final history = await _isar.quests
         .filter()
         .statusEqualTo(QuestStatus.completed)
-        .or()
-        .statusEqualTo(QuestStatus.skipped)
         .sortByAssignedAtDesc()
         .findAll();
 

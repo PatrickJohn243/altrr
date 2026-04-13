@@ -38,7 +38,7 @@ class NotificationsScreen extends StatelessWidget {
                       subtitle:
                           "Your quest for today is ready — don't let it expire.",
                       time: '2m ago',
-                      isUnread: true,
+                      isUnread: false,
                     ),
                     const SizedBox(height: AppSpacing.sm),
                     const NotificationRow(
