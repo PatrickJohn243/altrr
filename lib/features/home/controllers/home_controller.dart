@@ -4,6 +4,7 @@ import '../../../core/database/isar_service.dart';
 import '../../../core/widgets/streak_card.dart';
 import '../../../features/quests/controllers/quests_controller.dart';
 import '../../../shared/models/quest.dart';
+import '../../../shared/models/earned_title.dart';
 
 class HomeController extends ChangeNotifier {
   final QuestsController _questsController;
@@ -12,6 +13,8 @@ class HomeController extends ChangeNotifier {
   List<Quest> recentQuests = [];
   int streakCount = 0;
   List<StreakDay> streakDays = _emptyWeek();
+  Map<String, int> categoryTitleCounts = {};
+  Map<String, int> categoryQuestCounts = {};
 
   HomeController(this._questsController) {
     _load();
@@ -32,6 +35,22 @@ class HomeController extends ChangeNotifier {
     recentQuests = history.take(5).toList();
     streakCount = _computeStreak(history, now);
     streakDays = _buildWeekDays(history, now);
+
+    final allTitles = await _isar.earnedTitles.where().findAll();
+    final counts = <String, int>{};
+    for (final t in allTitles) {
+      if (t.category != null) {
+        counts[t.category!] = (counts[t.category!] ?? 0) + 1;
+      }
+    }
+    categoryTitleCounts = counts;
+
+    final questCounts = <String, int>{};
+    for (final q in history) {
+      questCounts[q.category] = (questCounts[q.category] ?? 0) + 1;
+    }
+    categoryQuestCounts = questCounts;
+
     notifyListeners();
   }
 

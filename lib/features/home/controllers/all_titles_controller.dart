@@ -35,13 +35,21 @@ class AllTitlesController extends ChangeNotifier {
   List<EarnedTitle> _all = [];
   String _query = '';
   TitleFilter _filter = TitleFilter.all;
+  String? _categoryFilter;
 
   String get query => _query;
   TitleFilter get filter => _filter;
+  String? get categoryFilter => _categoryFilter;
   int get totalCount => _all.length;
 
-  AllTitlesController() {
+  AllTitlesController({String? initialCategory}) {
+    _categoryFilter = initialCategory;
     _load();
+  }
+
+  void clearCategoryFilter() {
+    _categoryFilter = null;
+    notifyListeners();
   }
 
   Future<void> _load() async {
@@ -55,7 +63,15 @@ class AllTitlesController extends ChangeNotifier {
   List<EarnedTitle> get filtered {
     var list = _all;
 
-    // Apply filter
+    // Apply category filter
+    if (_categoryFilter != null) {
+      list = list
+          .where((t) =>
+              t.category?.toLowerCase() == _categoryFilter!.toLowerCase())
+          .toList();
+    }
+
+    // Apply type filter
     switch (_filter) {
       case TitleFilter.quest:
         list = list.where((t) => t.condition == TitleCondition.questCount).toList();

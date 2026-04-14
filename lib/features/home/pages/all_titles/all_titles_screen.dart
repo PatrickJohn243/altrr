@@ -10,7 +10,8 @@ import '../../widgets/titles_empty_state.dart';
 import '../../../quests/widgets/title_earned_sheet.dart';
 
 class AllTitlesScreen extends StatefulWidget {
-  const AllTitlesScreen({super.key});
+  final String? initialCategory;
+  const AllTitlesScreen({super.key, this.initialCategory});
 
   @override
   State<AllTitlesScreen> createState() => _AllTitlesScreenState();
@@ -22,7 +23,7 @@ class _AllTitlesScreenState extends State<AllTitlesScreen> {
   @override
   void initState() {
     super.initState();
-    _controller = AllTitlesController();
+    _controller = AllTitlesController(initialCategory: widget.initialCategory);
   }
 
   @override
@@ -114,42 +115,77 @@ class _AllTitlesScreenState extends State<AllTitlesScreen> {
                   padding: const EdgeInsets.symmetric(
                     horizontal: AppSpacing.screenPadding,
                   ),
-                  children: TitleFilter.values.map((f) {
-                    final isActive = _controller.filter == f;
-                    return Padding(
-                      padding: const EdgeInsets.only(right: AppSpacing.sm),
-                      child: GestureDetector(
-                        onTap: () => _controller.onFilterChanged(f),
-                        child: AnimatedContainer(
-                          duration: const Duration(milliseconds: 180),
+                  children: [
+                    // Active category chip (shown when navigated from category card)
+                    if (_controller.categoryFilter != null) ...[
+                      GestureDetector(
+                        onTap: _controller.clearCategoryFilter,
+                        child: Container(
                           padding: const EdgeInsets.symmetric(
-                            horizontal: 14,
+                            horizontal: 12,
                             vertical: 7,
                           ),
                           decoration: BoxDecoration(
-                            color: isActive
-                                ? AppColors.accent
-                                : AppColors.bgSurface,
+                            color: AppColors.accentSubtle,
                             borderRadius: BorderRadius.circular(AppRadius.chip),
-                            border: Border.all(
-                              color: isActive
-                                  ? AppColors.accent
-                                  : AppColors.borderMid,
-                            ),
+                            border: Border.all(color: AppColors.accentDim),
                           ),
-                          child: Text(
-                            f.label,
-                            style: AppTypography.unboundedBold(
-                              10,
-                              isActive
-                                  ? AppColors.textInverse
-                                  : AppColors.textMuted,
-                            ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                _controller.categoryFilter!.toUpperCase(),
+                                style: AppTypography.unboundedBold(
+                                    10, AppColors.accent),
+                              ),
+                              const SizedBox(width: 6),
+                              const Icon(Icons.close,
+                                  size: 10, color: AppColors.accent),
+                            ],
                           ),
                         ),
                       ),
-                    );
-                  }).toList(),
+                      const SizedBox(width: AppSpacing.sm),
+                    ],
+                    // Type filter chips
+                    ...TitleFilter.values.map((f) {
+                      final isActive = _controller.filter == f;
+                      return Padding(
+                        padding: const EdgeInsets.only(right: AppSpacing.sm),
+                        child: GestureDetector(
+                          onTap: () => _controller.onFilterChanged(f),
+                          child: AnimatedContainer(
+                            duration: const Duration(milliseconds: 180),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 14,
+                              vertical: 7,
+                            ),
+                            decoration: BoxDecoration(
+                              color: isActive
+                                  ? AppColors.accent
+                                  : AppColors.bgSurface,
+                              borderRadius:
+                                  BorderRadius.circular(AppRadius.chip),
+                              border: Border.all(
+                                color: isActive
+                                    ? AppColors.accent
+                                    : AppColors.borderMid,
+                              ),
+                            ),
+                            child: Text(
+                              f.label,
+                              style: AppTypography.unboundedBold(
+                                10,
+                                isActive
+                                    ? AppColors.textInverse
+                                    : AppColors.textMuted,
+                              ),
+                            ),
+                          ),
+                        ),
+                      );
+                    }),
+                  ],
                 ),
               ),
             ),
@@ -185,7 +221,8 @@ class _AllTitlesScreenState extends State<AllTitlesScreen> {
                         titleName: t.titleText,
                         subtitle: _formatDate(t.earnedAt),
                         isNew: !t.isSeen,
-                        onTap: () => TitleEarnedSheet.show(context, titles: [t]),
+                        onTap: () =>
+                            TitleEarnedSheet.show(context, titles: [t]),
                       );
                     },
                   );

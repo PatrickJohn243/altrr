@@ -5,10 +5,9 @@ import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/widgets/app_bar_main.dart';
 import '../../../../core/widgets/quest_display_card.dart';
 import '../../../../core/widgets/streak_card.dart';
-import '../../../../core/widgets/title_card.dart';
+import '../../../../core/widgets/title_card.dart' show TitleCategoryCard;
 import '../../../../core/widgets/quest_row_card.dart';
 import '../../../../core/widgets/section_header.dart';
-import '../../../../shared/models/quest.dart';
 import '../../controllers/home_controller.dart';
 import '../../../quests/controllers/quests_controller_provider.dart';
 
@@ -51,10 +50,7 @@ class _HomeScreenState extends State<HomeScreen> {
       body: SafeArea(
         child: Column(
           children: [
-            AppBarMain(
-              onAvatarTap: () => context.push('/profile'),
-              onBellTap: () => context.push('/notifications'),
-            ),
+            const AppBarMain(),
             Expanded(
               child: ListenableBuilder(
                 listenable: homeCtrl,
@@ -73,6 +69,10 @@ class _HomeScreenState extends State<HomeScreen> {
                             questTitle: activeQuest.title,
                             description: activeQuest.description,
                             expiryText: _expiryText(activeQuest.expiresAt),
+                            category: activeQuest.category,
+                            questsInCategory: homeCtrl.categoryQuestCounts[
+                                    activeQuest.category] ??
+                                0,
                             assignedByAltrr: activeQuest.assignedByAltrr,
                             onComplete: () async {
                               final quest = questsCtrl.activeQuest;
@@ -100,44 +100,41 @@ class _HomeScreenState extends State<HomeScreen> {
                         const SizedBox(height: AppSpacing.sectionGap),
 
                         // ── YOUR TITLES ──────────────────────────────────────
-                        SectionHeader(label: 'YOUR TITLES', seeAll: () => context.push('/titles')),
+                        SectionHeader(
+                            label: 'YOUR TITLES',
+                            seeAll: () => context.push('/titles')),
                         const SizedBox(height: AppSpacing.itemGap),
                         SizedBox(
                           height: 155,
-                          child: ListView(
+                          child: ListView.separated(
                             scrollDirection: Axis.horizontal,
                             clipBehavior: Clip.none,
-                            children: const [
-                              TitleCard(
-                                icon: Icon(Icons.restaurant,
-                                    size: 20, color: AppColors.accent),
-                                category: 'Food',
-                                titleName: 'Conversationalist',
-                                questCount: 2,
-                              ),
-                              SizedBox(width: AppSpacing.itemGap),
-                              TitleCard(
-                                icon: Icon(Icons.people,
-                                    size: 20, color: AppColors.accent),
-                                category: 'People',
-                                titleName: 'The Wanderer',
-                                questCount: 3,
-                              ),
-                              SizedBox(width: AppSpacing.itemGap),
-                              TitleCard(
-                                icon: Icon(Icons.fitness_center,
-                                    size: 20, color: AppColors.accent),
-                                category: 'Gym',
-                                titleName: 'Iron Will',
-                                questCount: 1,
-                              ),
-                            ],
+                            itemCount: _categories.length,
+                            separatorBuilder: (_, __) =>
+                                const SizedBox(width: AppSpacing.itemGap),
+                            itemBuilder: (context, i) {
+                              final cat = _categories[i];
+                              final count =
+                                  homeCtrl.categoryTitleCounts[cat.key] ?? 0;
+                              return TitleCategoryCard(
+                                category: cat.label,
+                                icon: cat.icon,
+                                titleCount: count,
+                                locked: count == 0,
+                                onTap: () => context.push(
+                                  '/titles',
+                                  extra: cat.key,
+                                ),
+                              );
+                            },
                           ),
                         ),
                         const SizedBox(height: AppSpacing.sectionGap),
 
                         // ── RECENT QUESTS ────────────────────────────────────
-                        SectionHeader(label: 'RECENT QUESTS', seeAll: () => context.push('/all-quests')),
+                        SectionHeader(
+                            label: 'RECENT QUESTS',
+                            seeAll: () => context.push('/all-quests')),
                         const SizedBox(height: AppSpacing.itemGap),
                         if (homeCtrl.recentQuests.isEmpty)
                           const SizedBox.shrink()
@@ -170,6 +167,19 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
+
+  // ── Category definitions ───────────────────────────────────────────────────
+
+  static const _categories = [
+    _CategoryDef('physical', 'Physical', Icons.fitness_center),
+    _CategoryDef('mental', 'Mental', Icons.psychology),
+    _CategoryDef('social', 'Social', Icons.people),
+    _CategoryDef('cooking', 'Cooking', Icons.restaurant),
+    _CategoryDef('learning', 'Learning', Icons.school),
+    _CategoryDef('explore', 'Explore', Icons.travel_explore),
+    _CategoryDef('hobby', 'Hobby', Icons.palette),
+    _CategoryDef('reflection', 'Reflect', Icons.self_improvement),
+  ];
 
   static String _expiryText(DateTime expiresAt) {
     final remaining = expiresAt.difference(DateTime.now());
@@ -219,4 +229,13 @@ class _HomeScreenState extends State<HomeScreen> {
         return Icons.star_outline;
     }
   }
+}
+
+// ── Category definition ────────────────────────────────────────────────────────
+
+class _CategoryDef {
+  final String key;
+  final String label;
+  final IconData icon;
+  const _CategoryDef(this.key, this.label, this.icon);
 }
