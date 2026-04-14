@@ -42,6 +42,26 @@ class Quest {
   /// The Isar ID of the [Character] who assigned this quest.
   /// Null for manually created side quests.
   int? characterId;
+
+  // ── Submission fields (set when user saves the submission screen) ──────────
+
+  /// User's note on what they did.
+  String? submissionNote;
+
+  /// How long they spent (free text, e.g. "30 min").
+  String? submissionTimeSpent;
+
+  /// Where they did it (free text, e.g. "Home").
+  String? submissionWhere;
+
+  /// Difficulty index 0–4 (easy → hard). Null if not set.
+  int? submissionDifficulty;
+
+  /// Labels of selected emotions, e.g. ["Happy", "Proud"].
+  List<String> submissionEmotions = [];
+
+  /// Absolute path to the submitted photo. Null if no photo.
+  String? submissionPhotoPath;
 }
 
 enum QuestStatus {
