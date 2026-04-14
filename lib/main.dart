@@ -31,7 +31,7 @@ class AltrrApp extends StatelessWidget {
       child: MaterialApp.router(
         title: 'Altrr',
         theme: AppTheme.dark,
-        routerConfig: appRouter,
+        routerConfig: createAppRouter(profileController),
         useInheritedMediaQuery: true,
         locale: DevicePreview.locale(context),
         builder: DevicePreview.appBuilder,

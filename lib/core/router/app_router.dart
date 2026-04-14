@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import '../controllers/user_profile_controller.dart';
 import '../widgets/navbar.dart';
 import '../../features/home/pages/home/home_screen.dart';
+import '../../features/onboarding/pages/onboarding_screen.dart';
 import '../../features/quests/pages/quests_screen.dart';
 import '../../features/quests/controllers/quests_controller.dart';
 import '../../features/quests/controllers/quests_controller_provider.dart';
@@ -20,9 +22,20 @@ import '../../features/home/pages/title_detail/title_detail_screen.dart';
 import '../../shared/models/quest.dart';
 import '../../shared/models/earned_title.dart';
 
-final appRouter = GoRouter(
+GoRouter createAppRouter(UserProfileController profileController) => GoRouter(
   initialLocation: '/home',
+  refreshListenable: profileController,
+  redirect: (context, state) {
+    final onboarded = profileController.isOnboarded;
+    final onOnboarding = state.matchedLocation == '/onboarding';
+    if (!onboarded && !onOnboarding) return '/onboarding';
+    return null;
+  },
   routes: [
+    GoRoute(
+      path: '/onboarding',
+      builder: (context, state) => const OnboardingScreen(),
+    ),
     ShellRoute(
       builder: (context, state, child) => _AppShell(child: child),
       routes: [
@@ -84,7 +97,8 @@ final appRouter = GoRouter(
     ),
     GoRoute(
       path: '/titles',
-      builder: (context, state) => const AllTitlesScreen(),
+      builder: (context, state) =>
+          AllTitlesScreen(initialCategory: state.extra as String?),
     ),
     GoRoute(
       path: '/all-quests',
