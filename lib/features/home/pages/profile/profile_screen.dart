@@ -1,17 +1,56 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:isar/isar.dart';
 import '../../../../core/controllers/user_profile_provider.dart';
+import '../../../../core/database/isar_service.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/widgets/app_bar_back.dart';
 import '../../../../core/widgets/profile_card.dart';
 import '../../../../core/widgets/section_header.dart';
 import '../../../../core/widgets/stat_card.dart';
-import '../../../../core/widgets/title_card.dart';
+import '../../../../core/widgets/title_card.dart' show TitleCategoryCard;
+import '../../../../shared/models/earned_title.dart';
 import '../../widgets/quest_new_row.dart';
 
-class ProfileScreen extends StatelessWidget {
+class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
+
+  @override
+  State<ProfileScreen> createState() => _ProfileScreenState();
+}
+
+class _ProfileScreenState extends State<ProfileScreen> {
+  final Isar _isar = IsarService.instance;
+  Map<String, int> _categoryTitleCounts = {};
+
+  static const _categories = [
+    _CategoryDef('physical',   'Physical',  Icons.fitness_center),
+    _CategoryDef('mental',     'Mental',    Icons.psychology),
+    _CategoryDef('social',     'Social',    Icons.people),
+    _CategoryDef('cooking',    'Cooking',   Icons.restaurant),
+    _CategoryDef('learning',   'Learning',  Icons.school),
+    _CategoryDef('explore',    'Explore',   Icons.travel_explore),
+    _CategoryDef('hobby',      'Hobby',     Icons.palette),
+    _CategoryDef('reflection', 'Reflect',   Icons.self_improvement),
+  ];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadCounts();
+  }
+
+  Future<void> _loadCounts() async {
+    final allTitles = await _isar.earnedTitles.where().findAll();
+    final counts = <String, int>{};
+    for (final t in allTitles) {
+      if (t.category != null) {
+        counts[t.category!] = (counts[t.category!] ?? 0) + 1;
+      }
+    }
+    if (mounted) setState(() => _categoryTitleCounts = counts);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -42,17 +81,13 @@ class ProfileScreen extends StatelessWidget {
                     const SizedBox(height: AppSpacing.xl),
                     const SectionHeader(label: 'YOUR NUMBERS'),
                     const SizedBox(height: AppSpacing.md),
-                    GridView.count(
-                      crossAxisCount: 3,
-                      mainAxisSpacing: AppSpacing.sm,
-                      crossAxisSpacing: AppSpacing.sm,
-                      childAspectRatio: 1.4,
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
+                    Row(
                       children: const [
-                        StatCard(value: '14', label: 'Quests done'),
-                        StatCard(value: '1', label: 'Skips'),
-                        StatCard(value: '3', label: 'Titles earned'),
+                        Expanded(child: StatCard(value: '14', label: 'Quests done')),
+                        SizedBox(width: AppSpacing.sm),
+                        Expanded(child: StatCard(value: '1', label: 'Skips')),
+                        SizedBox(width: AppSpacing.sm),
+                        Expanded(child: StatCard(value: '3', label: 'Titles earned')),
                       ],
                     ),
                     const SizedBox(height: AppSpacing.xl),
@@ -79,45 +114,33 @@ class ProfileScreen extends StatelessWidget {
                       isNew: false,
                     ),
                     const SizedBox(height: AppSpacing.xl),
-                    SectionHeader(label: 'ALL TITLES', seeAll: () => context.push('/titles')),
+                    SectionHeader(
+                      label: 'ALL TITLES',
+                      seeAll: () => context.push('/titles'),
+                    ),
                     const SizedBox(height: AppSpacing.md),
                     SizedBox(
                       height: 155,
-                      child: ListView(
+                      child: ListView.separated(
                         scrollDirection: Axis.horizontal,
-                        children: [
-                          TitleCard(
-                            icon: const Icon(Icons.restaurant_outlined,
-                                size: 18, color: AppColors.textMuted),
-                            category: 'Food',
-                            titleName: 'The Taster',
-                            questCount: 3,
-                          ),
-                          const SizedBox(width: AppSpacing.sm),
-                          TitleCard(
-                            icon: const Icon(Icons.people_outline,
-                                size: 18, color: AppColors.textMuted),
-                            category: 'People',
-                            titleName: 'The Connector',
-                            questCount: 2,
-                          ),
-                          const SizedBox(width: AppSpacing.sm),
-                          TitleCard(
-                            icon: const Icon(Icons.fitness_center_outlined,
-                                size: 18, color: AppColors.textMuted),
-                            category: 'Gym',
-                            titleName: 'The Lifter',
-                            questCount: 5,
-                          ),
-                          const SizedBox(width: AppSpacing.sm),
-                          TitleCard(
-                            icon: const Icon(Icons.flight_outlined,
-                                size: 18, color: AppColors.textMuted),
-                            category: 'Travel',
-                            titleName: 'The Wanderer',
-                            questCount: 1,
-                          ),
-                        ],
+                        itemCount: _categories.length,
+                        separatorBuilder: (_, __) =>
+                            const SizedBox(width: AppSpacing.sm),
+                        itemBuilder: (context, i) {
+                          final cat = _categories[i];
+                          final count =
+                              _categoryTitleCounts[cat.key] ?? 0;
+                          return TitleCategoryCard(
+                            category: cat.label,
+                            icon: cat.icon,
+                            titleCount: count,
+                            locked: count == 0,
+                            onTap: () => context.push(
+                              '/titles',
+                              extra: cat.key,
+                            ),
+                          );
+                        },
                       ),
                     ),
                     const SizedBox(height: AppSpacing.xxl),
@@ -130,4 +153,13 @@ class ProfileScreen extends StatelessWidget {
       ),
     );
   }
+}
+
+// ── Category definition ────────────────────────────────────────────────────────
+
+class _CategoryDef {
+  final String key;
+  final String label;
+  final IconData icon;
+  const _CategoryDef(this.key, this.label, this.icon);
 }

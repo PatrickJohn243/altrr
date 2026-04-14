@@ -58,10 +58,7 @@ class _QuestsScreenState extends State<QuestsScreen> {
       body: SafeArea(
         child: Column(
           children: [
-            AppBarMain(
-              onAvatarTap: () => context.push('/profile'),
-              onBellTap: () {},
-            ),
+            const AppBarMain(),
             Expanded(
               child: ListenableBuilder(
                 listenable: controller,
@@ -174,22 +171,43 @@ class _QuestsScreenState extends State<QuestsScreen> {
                             ),
                           ),
                         ),
+                        const SizedBox(height: AppSpacing.sm),
+
+                        // ── TEST: Onboarding button ─────────────────────────
+                        SizedBox(
+                          width: double.infinity,
+                          child: OutlinedButton.icon(
+                            style: OutlinedButton.styleFrom(
+                              foregroundColor: AppColors.textDisabled,
+                              side:
+                                  const BorderSide(color: AppColors.borderMid),
+                              padding: const EdgeInsets.symmetric(vertical: 12),
+                              shape: const RoundedRectangleBorder(
+                                borderRadius: BorderRadius.all(
+                                    Radius.circular(AppRadius.button)),
+                              ),
+                            ),
+                            onPressed: () => context.push('/onboarding'),
+                            icon: const Icon(Icons.play_circle_outline, size: 16),
+                            label: Text(
+                              'Test Onboarding',
+                              style: AppTypography.unboundedBold(
+                                  12, AppColors.textDisabled),
+                            ),
+                          ),
+                        ),
                         const SizedBox(height: AppSpacing.sectionGap),
 
                         // ── YOUR NUMBERS ────────────────────────────────────
                         const SectionHeader(label: 'YOUR NUMBERS'),
                         const SizedBox(height: AppSpacing.itemGap),
-                        GridView.count(
-                          crossAxisCount: 3,
-                          mainAxisSpacing: AppSpacing.sm,
-                          crossAxisSpacing: AppSpacing.sm,
-                          childAspectRatio: 1.7,
-                          shrinkWrap: true,
-                          physics: const NeverScrollableScrollPhysics(),
+                        Row(
                           children: const [
-                            StatCard(value: '14', label: 'Quests Done'),
-                            StatCard(value: '1', label: 'Skips'),
-                            StatCard(value: '3', label: 'Titles Earned'),
+                            Expanded(child: StatCard(value: '14', label: 'Quests Done')),
+                            SizedBox(width: AppSpacing.sm),
+                            Expanded(child: StatCard(value: '1', label: 'Skips')),
+                            SizedBox(width: AppSpacing.sm),
+                            Expanded(child: StatCard(value: '3', label: 'Titles Earned')),
                           ],
                         ),
                         const SizedBox(height: AppSpacing.sectionGap),

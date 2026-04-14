@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import '../controllers/user_profile_provider.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_typography.dart';
@@ -10,15 +11,9 @@ import '../theme/app_spacing.dart';
 /// Username, initials, and avatar image are read live from [UserProfileProvider].
 /// Greeting is derived from device time — 3 variants per period, seeded by
 /// day-of-year so it stays consistent within the same day.
+/// Navigation to /profile and /notifications is handled internally.
 class AppBarMain extends StatelessWidget {
-  final VoidCallback? onAvatarTap;
-  final VoidCallback? onBellTap;
-
-  const AppBarMain({
-    super.key,
-    this.onAvatarTap,
-    this.onBellTap,
-  });
+  const AppBarMain({super.key});
 
   static String _buildGreeting() {
     final now = DateTime.now();
@@ -77,7 +72,7 @@ class AppBarMain extends StatelessWidget {
                     Text(profile.name, style: AppTypography.screenTitle),
                     const SizedBox(width: AppSpacing.sm),
                     GestureDetector(
-                      onTap: onBellTap,
+                      onTap: () => context.push('/notifications'),
                       child: const Icon(
                         Icons.notifications_outlined,
                         color: AppColors.accent,
@@ -91,7 +86,7 @@ class AppBarMain extends StatelessWidget {
           ),
           // Avatar
           GestureDetector(
-            onTap: onAvatarTap,
+            onTap: () => context.push('/profile'),
             child: Container(
               width: 44,
               height: 44,
