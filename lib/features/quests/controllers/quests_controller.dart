@@ -123,18 +123,25 @@ class QuestsController extends ChangeNotifier {
   // ── Private ────────────────────────────────────────────────────────────────
 
   Future<void> _resolveQuest(QuestStatus resolution) async {
-    final quest = activeQuest!;
+    final questId = activeQuest!.id;
     isLoading = true;
     notifyListeners();
 
+    // Re-read from Isar so submission fields saved by QuestSubmissionScreen
+    // are not overwritten by the stale in-memory activeQuest object.
+    Quest? quest;
     await _isar.writeTxn(() async {
-      quest.status = resolution;
-      quest.completedAt = DateTime.now();
-      await _isar.quests.put(quest);
+      quest = await _isar.quests.get(questId);
+      if (quest == null) return;
+      quest!.status = resolution;
+      quest!.completedAt = DateTime.now();
+      await _isar.quests.put(quest!);
     });
 
+    if (quest == null) return;
+
     lastEarnedTitles = await TitleController.checkAndAward(
-      completedQuest: quest,
+      completedQuest: quest!,
       isar: _isar,
     );
 

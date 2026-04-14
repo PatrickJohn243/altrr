@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
+import '../../../../core/database/isar_service.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
@@ -59,7 +60,7 @@ class _QuestSubmissionScreenState extends State<QuestSubmissionScreen> {
 
   _Difficulty _difficulty = _Difficulty.easy;
   final Set<int> _selectedEmotions = {};
-  final List<XFile> _photos = [];
+  XFile? _photo;
   final _picker = ImagePicker();
 
   @override
@@ -71,15 +72,14 @@ class _QuestSubmissionScreenState extends State<QuestSubmissionScreen> {
   }
 
   Future<void> _pickPhoto() async {
-    if (_photos.length >= 4) return;
     final photo = await _picker.pickImage(
       source: ImageSource.gallery,
       imageQuality: 80,
     );
-    if (photo != null) setState(() => _photos.add(photo));
+    if (photo != null) setState(() => _photo = photo);
   }
 
-  void _removePhoto(int index) => setState(() => _photos.removeAt(index));
+  void _removePhoto() => setState(() => _photo = null);
 
   void _toggleEmotion(int index) => setState(() {
         if (_selectedEmotions.contains(index)) {
@@ -89,9 +89,24 @@ class _QuestSubmissionScreenState extends State<QuestSubmissionScreen> {
         }
       });
 
-  void _save() {
-    // TODO: persist submission data
-    context.pop(true);
+  Future<void> _save() async {
+    final isar = IsarService.instance;
+    await isar.writeTxn(() async {
+      final quest = await isar.quests.get(widget.quest.id);
+      if (quest == null) return;
+      final note = _whatController.text.trim();
+      final time = _timeController.text.trim();
+      final where = _whereController.text.trim();
+      quest.submissionNote = note.isEmpty ? null : note;
+      quest.submissionTimeSpent = time.isEmpty ? null : time;
+      quest.submissionWhere = where.isEmpty ? null : where;
+      quest.submissionDifficulty = _difficulty.index;
+      quest.submissionEmotions =
+          _selectedEmotions.map((i) => _emotions[i].label).toList();
+      quest.submissionPhotoPath = _photo?.path;
+      await isar.quests.put(quest);
+    });
+    if (mounted) context.pop(true);
   }
 
   void _share() {
@@ -145,52 +160,37 @@ class _QuestSubmissionScreenState extends State<QuestSubmissionScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const _SectionLabel('PHOTOS'),
+        const _SectionLabel('PHOTO'),
         const SizedBox(height: AppSpacing.md),
-        SizedBox(
-          height: 88,
-          child: ListView(
-            scrollDirection: Axis.horizontal,
-            children: [
-              // Picked thumbnails
-              ..._photos.asMap().entries.map(
-                (e) => Padding(
-                  padding: const EdgeInsets.only(right: AppSpacing.sm),
-                  child: _PhotoThumbnail(
-                    file: File(e.value.path),
-                    onRemove: () => _removePhoto(e.key),
+        _photo != null
+            ? _PhotoThumbnail(
+                file: File(_photo!.path),
+                onRemove: _removePhoto,
+              )
+            : GestureDetector(
+                onTap: _pickPhoto,
+                child: Container(
+                  width: double.infinity,
+                  height: 160,
+                  decoration: BoxDecoration(
+                    color: AppColors.bgSurface,
+                    borderRadius: BorderRadius.circular(AppRadius.card),
+                    border: Border.all(color: AppColors.borderMid),
+                  ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(
+                        Icons.add_photo_alternate_outlined,
+                        size: 32,
+                        color: AppColors.textMuted,
+                      ),
+                      const SizedBox(height: 8),
+                      Text('Add photo', style: AppTypography.caption),
+                    ],
                   ),
                 ),
               ),
-              // Add button
-              if (_photos.length < 4)
-                GestureDetector(
-                  onTap: _pickPhoto,
-                  child: Container(
-                    width: 88,
-                    height: 88,
-                    decoration: BoxDecoration(
-                      color: AppColors.bgSurface,
-                      borderRadius: BorderRadius.circular(AppRadius.card),
-                      border: Border.all(color: AppColors.borderMid),
-                    ),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Icon(
-                          Icons.add_photo_alternate_outlined,
-                          size: 26,
-                          color: AppColors.textMuted,
-                        ),
-                        const SizedBox(height: 5),
-                        Text('Add photo', style: AppTypography.caption),
-                      ],
-                    ),
-                  ),
-                ),
-            ],
-          ),
-        ),
       ],
     );
   }
@@ -655,26 +655,26 @@ class _PhotoThumbnail extends StatelessWidget {
           borderRadius: BorderRadius.circular(AppRadius.card),
           child: Image.file(
             file,
-            width: 88,
-            height: 88,
+            width: double.infinity,
+            height: 160,
             fit: BoxFit.cover,
           ),
         ),
         Positioned(
-          top: -6,
-          right: -6,
+          top: 8,
+          right: 8,
           child: GestureDetector(
             onTap: onRemove,
             child: Container(
-              width: 20,
-              height: 20,
+              width: 24,
+              height: 24,
               decoration: const BoxDecoration(
                 color: AppColors.bgElevated,
                 shape: BoxShape.circle,
               ),
               child: const Icon(
                 Icons.close,
-                size: 11,
+                size: 13,
                 color: AppColors.textMuted,
               ),
             ),
