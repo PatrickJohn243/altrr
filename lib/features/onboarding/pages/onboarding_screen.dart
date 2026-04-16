@@ -1,11 +1,12 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:image_picker/image_picker.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/app_typography.dart';
 import '../../../core/controllers/user_profile_provider.dart';
+import '../../../core/utils/image_utils.dart';
+import '../../../shared/data/quest_categories.dart';
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
@@ -21,22 +22,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   // Step 2 — Name
   final _nameController = TextEditingController();
 
-  // Step 3 — Photo
-  XFile? _photo;
-
-  // Step 4 — Categories
+  String? _photoPath;
   final _selectedCategories = <String>{};
-
-  static const _categories = [
-    (key: 'physical',   label: 'Physical',   icon: Icons.fitness_center),
-    (key: 'mental',     label: 'Mental',     icon: Icons.psychology),
-    (key: 'social',     label: 'Social',     icon: Icons.people),
-    (key: 'cooking',    label: 'Cooking',    icon: Icons.restaurant),
-    (key: 'learning',   label: 'Learning',   icon: Icons.school),
-    (key: 'explore',    label: 'Explore',    icon: Icons.travel_explore),
-    (key: 'hobby',      label: 'Hobby',      icon: Icons.palette),
-    (key: 'reflection', label: 'Reflection', icon: Icons.self_improvement),
-  ];
 
   @override
   void dispose() {
@@ -56,30 +43,33 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   bool get _canProceed {
     switch (_currentPage) {
-      case 0: return true;
-      case 1: return _nameController.text.trim().isNotEmpty;
-      case 2: return true; // photo optional
-      case 3: return _selectedCategories.isNotEmpty;
-      default: return false;
+      case 0:
+        return true;
+      case 1:
+        return _nameController.text.trim().isNotEmpty;
+      case 2:
+        return true; // photo optional
+      case 3:
+        return _selectedCategories.isNotEmpty;
+      default:
+        return false;
     }
   }
 
   Future<void> _pickPhoto() async {
-    final picker = ImagePicker();
-    final file = await picker.pickImage(
-      source: ImageSource.gallery,
+    final path = await ImageUtils.pickFromGallery(
       maxWidth: 800,
       maxHeight: 800,
-      imageQuality: 85,
+      quality: 85,
     );
-    if (file != null) setState(() => _photo = file);
+    if (path != null) setState(() => _photoPath = path);
   }
 
   Future<void> _finish() async {
     final ctrl = UserProfileProvider.of(context);
     await ctrl.saveOnboarding(
       name: _nameController.text.trim(),
-      avatarPath: _photo?.path,
+      avatarPath: _photoPath,
       preferredCategories: _selectedCategories.toList(),
     );
     if (mounted) context.go('/home');
@@ -97,7 +87,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               padding: const EdgeInsets.only(top: 24, bottom: 8),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
-                children: List.generate(4, (i) => _Dot(active: i == _currentPage)),
+                children:
+                    List.generate(4, (i) => _Dot(active: i == _currentPage)),
               ),
             ),
 
@@ -109,10 +100,11 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 onPageChanged: (i) => setState(() => _currentPage = i),
                 children: [
                   _WelcomePage(onNext: _next),
-                  _NamePage(controller: _nameController, onChanged: () => setState(() {})),
-                  _PhotoPage(photo: _photo, onPick: _pickPhoto, onNext: _next),
+                  _NamePage(controller: _nameController),
+                  _PhotoPage(
+                      photoPath: _photoPath, onPick: _pickPhoto, onNext: _next),
                   _CategoriesPage(
-                    categories: _categories,
+                    categories: QuestCategories.all,
                     selected: _selectedCategories,
                     onToggle: (key) => setState(() {
                       if (_selectedCategories.contains(key)) {
@@ -129,36 +121,46 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             // CTA button
             Padding(
               padding: const EdgeInsets.fromLTRB(
-                AppSpacing.screenPadding, 0,
-                AppSpacing.screenPadding, AppSpacing.xxl,
+                AppSpacing.screenPadding,
+                0,
+                AppSpacing.screenPadding,
+                AppSpacing.xxl,
               ),
-              child: SizedBox(
-                width: double.infinity,
-                height: 48,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: _canProceed
-                        ? AppColors.accent
-                        : AppColors.bgElevated,
-                    foregroundColor: _canProceed
-                        ? AppColors.textInverse
-                        : AppColors.textDisabled,
-                    elevation: 0,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(AppRadius.button),
+              child: ListenableBuilder(
+                listenable: _nameController,
+                builder: (context, _) {
+                  final canProceed = _canProceed;
+                  return SizedBox(
+                    width: double.infinity,
+                    height: 48,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: canProceed
+                            ? AppColors.accent
+                            : AppColors.bgElevated,
+                        foregroundColor: canProceed
+                            ? AppColors.textInverse
+                            : AppColors.textDisabled,
+                        elevation: 0,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(AppRadius.button),
+                        ),
+                      ),
+                      onPressed: canProceed
+                          ? (_currentPage == 3 ? _finish : _next)
+                          : null,
+                      child: Text(
+                        _currentPage == 3 ? 'Begin' : 'Continue',
+                        style: AppTypography.unboundedBold(
+                          12,
+                          canProceed
+                              ? AppColors.textInverse
+                              : AppColors.textDisabled,
+                        ),
+                      ),
                     ),
-                  ),
-                  onPressed: _canProceed
-                      ? (_currentPage == 3 ? _finish : _next)
-                      : null,
-                  child: Text(
-                    _currentPage == 3 ? 'Begin' : 'Continue',
-                    style: AppTypography.unboundedBold(
-                      12,
-                      _canProceed ? AppColors.textInverse : AppColors.textDisabled,
-                    ),
-                  ),
-                ),
+                  );
+                },
               ),
             ),
           ],
@@ -218,18 +220,22 @@ class _WelcomePage extends StatelessWidget {
             ),
           ),
           const SizedBox(height: AppSpacing.xxl),
-          Text('Welcome to\nAltrr.', style: AppTypography.unboundedBlack(28, AppColors.textPrimary)),
+          Text('Welcome to\nAltrr.',
+              style: AppTypography.unboundedBlack(28, AppColors.textPrimary)),
           const SizedBox(height: AppSpacing.lg),
           Text(
             'Altrr assigns you quests — you don\'t pick them.\nComplete them, earn titles, build your streak.',
             style: AppTypography.outfitMedium(14, AppColors.textMuted),
           ),
           const SizedBox(height: AppSpacing.xxl),
-          _FeatureRow(icon: Icons.task_alt, text: 'Daily quests assigned to you'),
+          const _FeatureRow(
+              icon: Icons.task_alt, text: 'Daily quests assigned to you'),
           const SizedBox(height: AppSpacing.md),
-          _FeatureRow(icon: Icons.local_fire_department, text: 'Streak tracking'),
+          const _FeatureRow(
+              icon: Icons.local_fire_department, text: 'Streak tracking'),
           const SizedBox(height: AppSpacing.md),
-          _FeatureRow(icon: Icons.workspace_premium, text: 'Earn titles as you grow'),
+          const _FeatureRow(
+              icon: Icons.workspace_premium, text: 'Earn titles as you grow'),
         ],
       ),
     );
@@ -255,7 +261,8 @@ class _FeatureRow extends StatelessWidget {
           child: Icon(icon, size: 16, color: AppColors.accent),
         ),
         const SizedBox(width: AppSpacing.md),
-        Text(text, style: AppTypography.outfitSemiBold(13, AppColors.textPrimary)),
+        Text(text,
+            style: AppTypography.outfitSemiBold(13, AppColors.textPrimary)),
       ],
     );
   }
@@ -265,8 +272,7 @@ class _FeatureRow extends StatelessWidget {
 
 class _NamePage extends StatelessWidget {
   final TextEditingController controller;
-  final VoidCallback onChanged;
-  const _NamePage({required this.controller, required this.onChanged});
+  const _NamePage({required this.controller});
 
   @override
   Widget build(BuildContext context) {
@@ -276,13 +282,14 @@ class _NamePage extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const SizedBox(height: 48),
-          Text('What should\nwe call you?', style: AppTypography.unboundedBlack(24, AppColors.textPrimary)),
+          Text('What should\nwe call you?',
+              style: AppTypography.unboundedBlack(24, AppColors.textPrimary)),
           const SizedBox(height: AppSpacing.sm),
-          Text('This shows on your profile.', style: AppTypography.outfitMedium(13, AppColors.textMuted)),
+          Text('This shows on your profile.',
+              style: AppTypography.outfitMedium(13, AppColors.textMuted)),
           const SizedBox(height: AppSpacing.xxl),
           TextField(
             controller: controller,
-            onChanged: (_) => onChanged(),
             autofocus: true,
             style: AppTypography.outfitSemiBold(16, AppColors.textPrimary),
             cursorColor: AppColors.accent,
@@ -291,7 +298,8 @@ class _NamePage extends StatelessWidget {
               hintStyle: AppTypography.outfitMedium(16, AppColors.textMuted),
               filled: true,
               fillColor: AppColors.bgSurface,
-              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+              contentPadding:
+                  const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(AppRadius.button),
                 borderSide: const BorderSide(color: AppColors.borderMid),
@@ -302,7 +310,8 @@ class _NamePage extends StatelessWidget {
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(AppRadius.button),
-                borderSide: const BorderSide(color: AppColors.accent, width: 1.5),
+                borderSide:
+                    const BorderSide(color: AppColors.accent, width: 1.5),
               ),
             ),
           ),
@@ -315,10 +324,11 @@ class _NamePage extends StatelessWidget {
 // ── Page 3: Photo ─────────────────────────────────────────────────────────────
 
 class _PhotoPage extends StatelessWidget {
-  final XFile? photo;
+  final String? photoPath;
   final VoidCallback onPick;
   final VoidCallback onNext;
-  const _PhotoPage({required this.photo, required this.onPick, required this.onNext});
+  const _PhotoPage(
+      {required this.photoPath, required this.onPick, required this.onNext});
 
   @override
   Widget build(BuildContext context) {
@@ -328,21 +338,24 @@ class _PhotoPage extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const SizedBox(height: 48),
-          Text('Add a photo\n(optional)', style: AppTypography.unboundedBlack(24, AppColors.textPrimary)),
+          Text('Add a photo\n(optional)',
+              style: AppTypography.unboundedBlack(24, AppColors.textPrimary)),
           const SizedBox(height: AppSpacing.sm),
-          Text('Shows on your profile card.', style: AppTypography.outfitMedium(13, AppColors.textMuted)),
+          Text('Shows on your profile card.',
+              style: AppTypography.outfitMedium(13, AppColors.textMuted)),
           const SizedBox(height: AppSpacing.xxl),
           Center(
             child: GestureDetector(
               onTap: onPick,
-              child: photo == null
+              child: photoPath == null
                   ? Container(
                       width: 120,
                       height: 120,
                       decoration: BoxDecoration(
                         color: AppColors.bgSurface,
                         shape: BoxShape.circle,
-                        border: Border.all(color: AppColors.borderMid, width: 2),
+                        border:
+                            Border.all(color: AppColors.borderMid, width: 2),
                       ),
                       child: const Icon(
                         Icons.add_a_photo_outlined,
@@ -354,7 +367,7 @@ class _PhotoPage extends StatelessWidget {
                       children: [
                         CircleAvatar(
                           radius: 60,
-                          backgroundImage: FileImage(File(photo!.path)),
+                          backgroundImage: FileImage(File(photoPath!)),
                         ),
                         Positioned(
                           bottom: 4,
@@ -367,9 +380,11 @@ class _PhotoPage extends StatelessWidget {
                               decoration: BoxDecoration(
                                 color: AppColors.accent,
                                 shape: BoxShape.circle,
-                                border: Border.all(color: AppColors.bgPrimary, width: 2),
+                                border: Border.all(
+                                    color: AppColors.bgPrimary, width: 2),
                               ),
-                              child: const Icon(Icons.edit, size: 14, color: AppColors.textInverse),
+                              child: const Icon(Icons.edit,
+                                  size: 14, color: AppColors.textInverse),
                             ),
                           ),
                         ),
@@ -377,7 +392,7 @@ class _PhotoPage extends StatelessWidget {
                     ),
             ),
           ),
-          if (photo == null) ...[
+          if (photoPath == null) ...[
             const SizedBox(height: AppSpacing.xl),
             Center(
               child: TextButton(
@@ -398,7 +413,7 @@ class _PhotoPage extends StatelessWidget {
 // ── Page 4: Categories ────────────────────────────────────────────────────────
 
 class _CategoriesPage extends StatelessWidget {
-  final List<({String key, String label, IconData icon})> categories;
+  final List<QuestCategory> categories;
   final Set<String> selected;
   final ValueChanged<String> onToggle;
 
@@ -416,7 +431,8 @@ class _CategoriesPage extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const SizedBox(height: 48),
-          Text('What interests\nyou?', style: AppTypography.unboundedBlack(24, AppColors.textPrimary)),
+          Text('What interests\nyou?',
+              style: AppTypography.unboundedBlack(24, AppColors.textPrimary)),
           const SizedBox(height: AppSpacing.sm),
           Text(
             'Altrr starts here — then takes you further.',
@@ -437,7 +453,8 @@ class _CategoriesPage extends StatelessWidget {
                   child: AnimatedContainer(
                     duration: const Duration(milliseconds: 150),
                     decoration: BoxDecoration(
-                      color: isOn ? AppColors.accentSubtle : AppColors.bgSurface,
+                      color:
+                          isOn ? AppColors.accentSubtle : AppColors.bgSurface,
                       borderRadius: BorderRadius.circular(AppRadius.button),
                       border: Border.all(
                         color: isOn ? AppColors.accent : AppColors.borderMid,
@@ -456,8 +473,10 @@ class _CategoriesPage extends StatelessWidget {
                         Text(
                           c.label,
                           style: isOn
-                              ? AppTypography.unboundedBold(11, AppColors.accent)
-                              : AppTypography.unboundedBold(11, AppColors.textMuted),
+                              ? AppTypography.unboundedBold(
+                                  11, AppColors.accent)
+                              : AppTypography.unboundedBold(
+                                  11, AppColors.textMuted),
                         ),
                       ],
                     ),
