@@ -4,11 +4,13 @@ import 'core/controllers/user_profile_controller.dart';
 import 'core/controllers/user_profile_provider.dart';
 import 'core/database/isar_service.dart';
 import 'core/router/app_router.dart';
+import 'prefs/app_preferences.dart';
 import 'core/theme/app_theme.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await IsarService.init();
+  await AppPreferences.init();
   final profileController = UserProfileController();
   await profileController.load();
   runApp(

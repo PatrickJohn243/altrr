@@ -23,12 +23,13 @@ import '../../shared/models/quest.dart';
 import '../../shared/models/earned_title.dart';
 
 GoRouter createAppRouter(UserProfileController profileController) => GoRouter(
-  initialLocation: '/home',
+  initialLocation: profileController.isOnboarded ? '/home' : '/onboarding',
   refreshListenable: profileController,
   redirect: (context, state) {
     final onboarded = profileController.isOnboarded;
     final onOnboarding = state.matchedLocation == '/onboarding';
     if (!onboarded && !onOnboarding) return '/onboarding';
+    if (onboarded && onOnboarding) return '/home';
     return null;
   },
   routes: [
