@@ -23,6 +23,9 @@ class QuestsController extends ChangeNotifier {
   /// Cleared when [clearLastEarnedTitles] is called (e.g. after UI shows them).
   List<EarnedTitle> lastEarnedTitles = const [];
 
+  int completedCount = 0;
+  int titlesEarnedCount = 0;
+
   /// True while an async operation is in progress.
   bool isLoading = false;
 
@@ -168,6 +171,9 @@ class QuestsController extends ChangeNotifier {
         .filter()
         .statusEqualTo(QuestStatus.completed)
         .findAll();
+
+    completedCount = completed.length;
+    titlesEarnedCount = await _isar.earnedTitles.count();
 
     // Keep the 5 most recent for the quests screen preview.
     recentCompleted = (completed..sort((a, b) =>

@@ -4,7 +4,7 @@ import '../theme/app_typography.dart';
 import '../theme/app_spacing.dart';
 
 class StatCard extends StatelessWidget {
-  final String value;
+  final int value;
   final String label;
 
   const StatCard({
@@ -33,9 +33,14 @@ class StatCard extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Text(
-            value,
-            style: AppTypography.unboundedBlack(20, AppColors.accent),
+          TweenAnimationBuilder<int>(
+            tween: IntTween(begin: 0, end: value),
+            duration: const Duration(milliseconds: 900),
+            curve: Curves.easeOut,
+            builder: (_, v, __) => Text(
+              '$v',
+              style: AppTypography.unboundedBlack(20, AppColors.accent),
+            ),
           ),
           const SizedBox(height: 3),
           Text(

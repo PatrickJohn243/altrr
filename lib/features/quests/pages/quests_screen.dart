@@ -8,6 +8,7 @@ import '../../../core/widgets/quest_card.dart';
 import '../../../core/widgets/quest_row_card.dart';
 import '../../../core/widgets/stat_card.dart';
 import '../../../core/widgets/section_header.dart';
+import '../../../shared/data/quest_categories.dart';
 import '../controllers/quests_controller.dart';
 import '../controllers/quests_controller_provider.dart';
 import '../widgets/title_earned_sheet.dart';
@@ -71,26 +72,44 @@ class _QuestsScreenState extends State<QuestsScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         // ── Active quest ────────────────────────────────────
-                        controller.activeQuest == null
-                            ? const SizedBox.shrink()
-                            : QuestCard(
-                                questTitle: controller.activeQuest!.title,
-                                description:
-                                    controller.activeQuest!.description,
-                                hint: controller.activeQuest!.hint,
-                                expiryText: 'Expires midnight',
-                                assignedByAltrr: true,
-                                onComplete: () async {
-                                  final quest = controller.activeQuest;
-                                  if (quest == null) return;
-                                  final saved = await context.push<bool>(
-                                    '/submit',
-                                    extra: quest,
-                                  );
-                                  if (saved == true) controller.completeQuest();
-                                },
-                                onSkip: controller.skipQuest,
+                        AnimatedSwitcher(
+                          duration: const Duration(milliseconds: 350),
+                          transitionBuilder: (child, animation) =>
+                              FadeTransition(
+                            opacity: animation,
+                            child: ScaleTransition(
+                              scale: Tween(begin: 0.95, end: 1.0).animate(
+                                CurvedAnimation(
+                                  parent: animation,
+                                  curve: Curves.easeOutBack,
+                                ),
                               ),
+                              child: child,
+                            ),
+                          ),
+                          child: controller.activeQuest == null
+                              ? const SizedBox.shrink()
+                              : QuestCard(
+                                  key: ValueKey(controller.activeQuest!.id),
+                                  questTitle: controller.activeQuest!.title,
+                                  description:
+                                      controller.activeQuest!.description,
+                                  hint: controller.activeQuest!.hint,
+                                  expiryText: 'Expires midnight',
+                                  assignedByAltrr: true,
+                                  onComplete: () async {
+                                    final quest = controller.activeQuest;
+                                    if (quest == null) return;
+                                    final saved = await context.push<bool>(
+                                      '/submit',
+                                      extra: quest,
+                                    );
+                                    if (saved == true)
+                                      controller.completeQuest();
+                                  },
+                                  onSkip: controller.skipQuest,
+                                ),
+                        ),
                         const SizedBox(height: AppSpacing.sm),
 
                         // ── Debug chip: character + category ────────────────
@@ -188,7 +207,8 @@ class _QuestsScreenState extends State<QuestsScreen> {
                               ),
                             ),
                             onPressed: () => context.push('/onboarding'),
-                            icon: const Icon(Icons.play_circle_outline, size: 16),
+                            icon:
+                                const Icon(Icons.play_circle_outline, size: 16),
                             label: Text(
                               'Test Onboarding',
                               style: AppTypography.unboundedBold(
@@ -202,12 +222,19 @@ class _QuestsScreenState extends State<QuestsScreen> {
                         const SectionHeader(label: 'YOUR NUMBERS'),
                         const SizedBox(height: AppSpacing.itemGap),
                         Row(
-                          children: const [
-                            Expanded(child: StatCard(value: '14', label: 'Quests Done')),
-                            SizedBox(width: AppSpacing.sm),
-                            Expanded(child: StatCard(value: '1', label: 'Skips')),
-                            SizedBox(width: AppSpacing.sm),
-                            Expanded(child: StatCard(value: '3', label: 'Titles Earned')),
+                          children: [
+                            Expanded(
+                                child: StatCard(
+                                    value: controller.completedCount,
+                                    label: 'Quests Done')),
+                            const SizedBox(width: AppSpacing.sm),
+                            Expanded(
+                                child: StatCard(value: 0, label: 'Skips')),
+                            const SizedBox(width: AppSpacing.sm),
+                            Expanded(
+                                child: StatCard(
+                                    value: controller.titlesEarnedCount,
+                                    label: 'Titles Earned')),
                           ],
                         ),
                         const SizedBox(height: AppSpacing.sectionGap),
@@ -226,7 +253,7 @@ class _QuestsScreenState extends State<QuestsScreen> {
                                     bottom: AppSpacing.itemGap),
                                 child: QuestRowCard(
                                   icon: Icon(
-                                    _iconForCategory(q.category),
+                                    QuestCategories.iconFor(q.category),
                                     size: 18,
                                     color: AppColors.textMuted,
                                   ),
@@ -234,8 +261,7 @@ class _QuestsScreenState extends State<QuestsScreen> {
                                   questTitle: q.title,
                                   date: _formatDate(
                                       q.completedAt ?? q.assignedAt),
-                                  onTap: () =>
-                                      context.push('/quest', extra: q),
+                                  onTap: () => context.push('/quest', extra: q),
                                 ),
                               )),
                         const SizedBox(height: AppSpacing.sectionGap),
@@ -252,33 +278,23 @@ class _QuestsScreenState extends State<QuestsScreen> {
   }
 }
 
-// ── Helpers ───────────────────────────────────────────────────────────────────
-
-IconData _iconForCategory(String category) {
-  switch (category.toLowerCase()) {
-    case 'physical':   return Icons.fitness_center;
-    case 'mental':     return Icons.psychology;
-    case 'social':     return Icons.people;
-    case 'cooking':    return Icons.restaurant;
-    case 'learning':   return Icons.school;
-    case 'explore':    return Icons.travel_explore;
-    case 'hobby':      return Icons.palette;
-    case 'reflection': return Icons.self_improvement;
-    default:           return Icons.star_outline;
-  }
-}
-
 String _formatDate(DateTime dt) {
   const months = [
-    'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-    'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
+    'Jan',
+    'Feb',
+    'Mar',
+    'Apr',
+    'May',
+    'Jun',
+    'Jul',
+    'Aug',
+    'Sep',
+    'Oct',
+    'Nov',
+    'Dec',
   ];
   return '${months[dt.month - 1]} ${dt.day}';
 }
-
-// ── Debug chip ────────────────────────────────────────────────────────────────
-// Shows which character + category produced the current quest.
-// Remove this widget once generation is wired to the real balance tracker.
 
 class _DebugChip extends StatelessWidget {
   final QuestsController controller;

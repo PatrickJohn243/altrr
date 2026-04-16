@@ -10,7 +10,9 @@ import '../../../../core/widgets/profile_card.dart';
 import '../../../../core/widgets/section_header.dart';
 import '../../../../core/widgets/stat_card.dart';
 import '../../../../core/widgets/title_card.dart' show TitleCategoryCard;
+import '../../../../shared/data/quest_categories.dart';
 import '../../../../shared/models/earned_title.dart';
+import '../../../../shared/models/quest.dart';
 import '../../widgets/quest_new_row.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -23,17 +25,8 @@ class ProfileScreen extends StatefulWidget {
 class _ProfileScreenState extends State<ProfileScreen> {
   final Isar _isar = IsarService.instance;
   Map<String, int> _categoryTitleCounts = {};
-
-  static const _categories = [
-    _CategoryDef('physical',   'Physical',  Icons.fitness_center),
-    _CategoryDef('mental',     'Mental',    Icons.psychology),
-    _CategoryDef('social',     'Social',    Icons.people),
-    _CategoryDef('cooking',    'Cooking',   Icons.restaurant),
-    _CategoryDef('learning',   'Learning',  Icons.school),
-    _CategoryDef('explore',    'Explore',   Icons.travel_explore),
-    _CategoryDef('hobby',      'Hobby',     Icons.palette),
-    _CategoryDef('reflection', 'Reflect',   Icons.self_improvement),
-  ];
+  int _completedCount = 0;
+  int _titlesCount = 0;
 
   @override
   void initState() {
@@ -49,7 +42,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
         counts[t.category!] = (counts[t.category!] ?? 0) + 1;
       }
     }
-    if (mounted) setState(() => _categoryTitleCounts = counts);
+    final completed = await _isar.quests
+        .filter()
+        .statusEqualTo(QuestStatus.completed)
+        .count();
+    if (mounted) {
+      setState(() {
+        _categoryTitleCounts = counts;
+        _completedCount = completed;
+        _titlesCount = allTitles.length;
+      });
+    }
   }
 
   @override
@@ -82,12 +85,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     const SectionHeader(label: 'YOUR NUMBERS'),
                     const SizedBox(height: AppSpacing.md),
                     Row(
-                      children: const [
-                        Expanded(child: StatCard(value: '14', label: 'Quests done')),
-                        SizedBox(width: AppSpacing.sm),
-                        Expanded(child: StatCard(value: '1', label: 'Skips')),
-                        SizedBox(width: AppSpacing.sm),
-                        Expanded(child: StatCard(value: '3', label: 'Titles earned')),
+                      children: [
+                        Expanded(
+                            child: StatCard(
+                                value: _completedCount,
+                                label: 'Quests done')),
+                        const SizedBox(width: AppSpacing.sm),
+                        Expanded(
+                            child: StatCard(value: 0, label: 'Skips')),
+                        const SizedBox(width: AppSpacing.sm),
+                        Expanded(
+                            child: StatCard(
+                                value: _titlesCount,
+                                label: 'Titles earned')),
                       ],
                     ),
                     const SizedBox(height: AppSpacing.xl),
@@ -123,13 +133,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       height: 155,
                       child: ListView.separated(
                         scrollDirection: Axis.horizontal,
-                        itemCount: _categories.length,
+                        itemCount: QuestCategories.all.length,
                         separatorBuilder: (_, __) =>
                             const SizedBox(width: AppSpacing.sm),
                         itemBuilder: (context, i) {
-                          final cat = _categories[i];
-                          final count =
-                              _categoryTitleCounts[cat.key] ?? 0;
+                          final cat = QuestCategories.all[i];
+                          final count = _categoryTitleCounts[cat.key] ?? 0;
                           return TitleCategoryCard(
                             category: cat.label,
                             icon: cat.icon,
@@ -153,13 +162,4 @@ class _ProfileScreenState extends State<ProfileScreen> {
       ),
     );
   }
-}
-
-// ── Category definition ────────────────────────────────────────────────────────
-
-class _CategoryDef {
-  final String key;
-  final String label;
-  final IconData icon;
-  const _CategoryDef(this.key, this.label, this.icon);
 }

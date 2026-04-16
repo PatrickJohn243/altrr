@@ -64,27 +64,48 @@ class _HomeScreenState extends State<HomeScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         // ── Active quest ─────────────────────────────────────
-                        if (activeQuest != null)
-                          QuestDisplayCard(
-                            questTitle: activeQuest.title,
-                            description: activeQuest.description,
-                            expiryText: _expiryText(activeQuest.expiresAt),
-                            category: activeQuest.category,
-                            questsInCategory: homeCtrl.categoryQuestCounts[
-                                    activeQuest.category] ??
-                                0,
-                            assignedByAltrr: activeQuest.assignedByAltrr,
-                            onComplete: () async {
-                              final quest = questsCtrl.activeQuest;
-                              if (quest == null) return;
-                              final saved = await context.push<bool>(
-                                '/submit',
-                                extra: quest,
-                              );
-                              if (saved == true) questsCtrl.completeQuest();
-                            },
-                            onSkip: questsCtrl.skipQuest,
+                        AnimatedSwitcher(
+                          duration: const Duration(milliseconds: 350),
+                          transitionBuilder: (child, animation) =>
+                              FadeTransition(
+                            opacity: animation,
+                            child: ScaleTransition(
+                              scale: Tween(begin: 0.95, end: 1.0).animate(
+                                CurvedAnimation(
+                                  parent: animation,
+                                  curve: Curves.easeOutBack,
+                                ),
+                              ),
+                              child: child,
+                            ),
                           ),
+                          child: activeQuest == null
+                              ? const SizedBox.shrink()
+                              : QuestDisplayCard(
+                                  key: ValueKey(activeQuest.id),
+                                  questTitle: activeQuest.title,
+                                  description: activeQuest.description,
+                                  expiryText:
+                                      _expiryText(activeQuest.expiresAt),
+                                  category: activeQuest.category,
+                                  questsInCategory: homeCtrl
+                                          .categoryQuestCounts[
+                                              activeQuest.category] ??
+                                      0,
+                                  assignedByAltrr: activeQuest.assignedByAltrr,
+                                  onComplete: () async {
+                                    final quest = questsCtrl.activeQuest;
+                                    if (quest == null) return;
+                                    final saved = await context.push<bool>(
+                                      '/submit',
+                                      extra: quest,
+                                    );
+                                    if (saved == true)
+                                      questsCtrl.completeQuest();
+                                  },
+                                  onSkip: questsCtrl.skipQuest,
+                                ),
+                        ),
                         const SizedBox(height: AppSpacing.sectionGap),
 
                         // ── THIS WEEK streak ─────────────────────────────────
