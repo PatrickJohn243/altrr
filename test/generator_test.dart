@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:altrr_app/shared/characters/character_roster.dart';
-import 'package:altrr_app/shared/generation/quest_generator.dart';
+import 'package:altrr_app/shared/generation/character/character_roster.dart';
+import 'package:altrr_app/shared/generation/quest/quest_generator.dart';
 
 void main() {
   test('generates quests for all characters and categories', () {
