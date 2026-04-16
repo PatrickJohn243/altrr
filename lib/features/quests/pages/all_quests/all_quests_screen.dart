@@ -6,6 +6,7 @@ import '../../../../core/theme/app_typography.dart';
 import '../../../../core/widgets/app_bar_back.dart';
 import '../../../../core/widgets/quest_row_card.dart';
 import '../../controllers/all_quests_controller.dart';
+import '../../../../shared/data/quest_categories.dart';
 import '../../widgets/quests_empty_state.dart';
 
 class AllQuestsScreen extends StatefulWidget {
@@ -38,7 +39,7 @@ class _AllQuestsScreenState extends State<AllQuestsScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            AppBarBack(),
+            const AppBarBack(),
 
             // ── Screen title + count ───────────────────────────────────────
             Padding(
@@ -141,7 +142,7 @@ class _AllQuestsScreenState extends State<AllQuestsScreen> {
                       final q = quests[i];
                       return QuestRowCard(
                         icon: Icon(
-                          _iconForCategory(q.category),
+                          QuestCategories.iconFor(q.category),
                           size: 18,
                           color: AppColors.textMuted,
                         ),
@@ -159,22 +160,6 @@ class _AllQuestsScreenState extends State<AllQuestsScreen> {
         ),
       ),
     );
-  }
-
-  // ── Helpers ────────────────────────────────────────────────────────────────
-
-  IconData _iconForCategory(String category) {
-    switch (category.toLowerCase()) {
-      case 'physical':   return Icons.fitness_center;
-      case 'mental':     return Icons.psychology;
-      case 'social':     return Icons.people;
-      case 'cooking':    return Icons.restaurant;
-      case 'learning':   return Icons.school;
-      case 'explore':    return Icons.travel_explore;
-      case 'hobby':      return Icons.palette;
-      case 'reflection': return Icons.self_improvement;
-      default:           return Icons.star_outline;
-    }
   }
 
   String _formatDate(DateTime dt) {

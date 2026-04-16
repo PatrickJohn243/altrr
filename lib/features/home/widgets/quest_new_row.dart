@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_typography.dart';
 import '../../../core/theme/app_spacing.dart';
+import '../../../core/widgets/badge.dart';
 
-/// Quest list row with a lime "NEW" badge instead of a date.
 class QuestNewRow extends StatelessWidget {
   final IconData icon;
   final String category;
@@ -64,31 +64,9 @@ class QuestNewRow extends StatelessWidget {
                   ],
                 ),
               ),
-              if (isNew) const _NewBadge(),
+              if (isNew) AppBadge.newLabel(),
             ],
           ),
-        ),
-      ),
-    );
-  }
-}
-
-class _NewBadge extends StatelessWidget {
-  const _NewBadge();
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: 37,
-      height: 13,
-      decoration: const BoxDecoration(
-        color: AppColors.accent,
-        borderRadius: BorderRadius.all(Radius.circular(AppRadius.chip)),
-      ),
-      child: Center(
-        child: Text(
-          'NEW',
-          style: AppTypography.unboundedBlack(8, AppColors.textInverse),
         ),
       ),
     );

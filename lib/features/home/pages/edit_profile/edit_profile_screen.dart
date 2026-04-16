@@ -1,10 +1,10 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
 import '../../../../core/controllers/user_profile_provider.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../../../core/theme/app_spacing.dart';
+import '../../../../core/utils/image_utils.dart';
 import '../../../../core/widgets/app_bar_back.dart';
 
 class EditProfileScreen extends StatefulWidget {
@@ -19,7 +19,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   String? _imagePath;
   bool _initialized = false;
   bool _saving = false;
-  final _picker = ImagePicker();
 
   @override
   void didChangeDependencies() {
@@ -39,13 +38,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   }
 
   Future<void> _pickImage() async {
-    final picked = await _picker.pickImage(
-      source: ImageSource.gallery,
-      imageQuality: 80,
-    );
-    if (picked != null) {
-      setState(() => _imagePath = picked.path);
-    }
+    final path = await ImageUtils.pickFromGallery();
+    if (path != null) setState(() => _imagePath = path);
   }
 
   Future<void> _save() async {
@@ -70,7 +64,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       body: SafeArea(
         child: Column(
           children: [
-            AppBarBack(),
+            const AppBarBack(),
             Expanded(
               child: SingleChildScrollView(
                 padding: const EdgeInsets.symmetric(
@@ -81,7 +75,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   children: [
                     const SizedBox(height: AppSpacing.xl),
 
-                    // ── Avatar picker ────────────────────────────────────────
+
                     Center(
                       child: GestureDetector(
                         onTap: _pickImage,
@@ -119,7 +113,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                       ),
                                     ),
                             ),
-                            // Camera badge
                             Positioned(
                               bottom: 0,
                               right: 0,
@@ -158,7 +151,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
                     const SizedBox(height: AppSpacing.xxl),
 
-                    // ── Name field ───────────────────────────────────────────
+
                     Text('NAME', style: AppTypography.sectionLabel),
                     const SizedBox(height: AppSpacing.sm),
                     Container(
@@ -196,7 +189,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               ),
             ),
 
-            // ── Save button (sticky bottom) ──────────────────────────────────
+
             Padding(
               padding: const EdgeInsets.fromLTRB(
                 AppSpacing.screenPadding,

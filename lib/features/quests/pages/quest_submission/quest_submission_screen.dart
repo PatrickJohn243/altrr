@@ -199,8 +199,7 @@ class _QuestSubmissionScreenState extends State<QuestSubmissionScreen> {
 
   Widget _buildQuestCard() {
     final date = widget.quest.completedAt ?? DateTime.now();
-    final dateStr =
-        '${_monthName(date.month)} ${date.day}, ${date.year}';
+    final dateStr = '${_monthName(date.month)} ${date.day}, ${date.year}';
 
     return Container(
       padding: const EdgeInsets.all(AppSpacing.cardPadding),
@@ -407,9 +406,7 @@ class _QuestSubmissionScreenState extends State<QuestSubmissionScreen> {
                         _difficultyLabels[i],
                         style: AppTypography.outfitMedium(
                           11,
-                          i == idx
-                              ? _difficultyColors[i]
-                              : AppColors.textMuted,
+                          i == idx ? _difficultyColors[i] : AppColors.textMuted,
                         ),
                         textAlign: i == 0
                             ? TextAlign.left
@@ -450,14 +447,12 @@ class _QuestSubmissionScreenState extends State<QuestSubmissionScreen> {
                   duration: const Duration(milliseconds: 150),
                   width: 74,
                   decoration: BoxDecoration(
-                    color: selected
-                        ? AppColors.accentSubtle
-                        : AppColors.bgSurface,
+                    color:
+                        selected ? AppColors.accentSubtle : AppColors.bgSurface,
                     borderRadius: BorderRadius.circular(AppRadius.card),
                     border: Border.all(
-                      color: selected
-                          ? AppColors.accent
-                          : AppColors.borderSubtle,
+                      color:
+                          selected ? AppColors.accent : AppColors.borderSubtle,
                       width: selected ? 1.5 : 1,
                     ),
                   ),
@@ -467,9 +462,8 @@ class _QuestSubmissionScreenState extends State<QuestSubmissionScreen> {
                       Icon(
                         _emotions[i].icon,
                         size: 26,
-                        color: selected
-                            ? AppColors.accent
-                            : AppColors.textMuted,
+                        color:
+                            selected ? AppColors.accent : AppColors.textMuted,
                       ),
                       const SizedBox(height: 6),
                       Text(
@@ -560,8 +554,18 @@ class _QuestSubmissionScreenState extends State<QuestSubmissionScreen> {
 
   static String _monthName(int month) {
     const m = [
-      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
     ];
     return m[month - 1];
   }

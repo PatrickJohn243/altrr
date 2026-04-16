@@ -4,7 +4,6 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_typography.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/widgets/app_bar_main.dart';
-import '../../../core/widgets/navbar.dart';
 import '../../../core/widgets/section_header.dart';
 import '../../../core/widgets/settings_card.dart';
 import '../../../core/services/alert_service.dart';
@@ -39,7 +38,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       body: SafeArea(
         child: Column(
           children: [
-            AppBarMain(),
+            const AppBarMain(),
             Expanded(
               child: SingleChildScrollView(
                 padding: const EdgeInsets.symmetric(

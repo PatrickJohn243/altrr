@@ -6,6 +6,7 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../../../core/widgets/app_bar_back.dart';
+import '../../../../core/widgets/badge.dart';
 import '../../../../shared/models/character.dart';
 import '../../../../shared/models/quest.dart';
 
@@ -92,7 +93,14 @@ class _QuestDetailScreenState extends State<QuestDetailScreen> {
                                     10, AppColors.questCardTextMuted),
                               ),
                               const Spacer(),
-                              _StatusPill(status: quest.status),
+                              switch (quest.status) {
+                QuestStatus.completed => const AppBadge(
+                    label: 'COMPLETED',
+                    color: AppColors.accent,
+                    textColor: AppColors.textInverse,
+                  ),
+                _ => AppBadge.active(),
+              },
                             ],
                           ),
                           const SizedBox(height: AppSpacing.sm),
@@ -156,8 +164,7 @@ class _QuestDetailScreenState extends State<QuestDetailScreen> {
                           ),
 
                           // Hint
-                          if (quest.hint != null &&
-                              quest.hint!.isNotEmpty) ...[
+                          if (quest.hint != null && quest.hint!.isNotEmpty) ...[
                             const SizedBox(height: AppSpacing.md),
                             Container(
                               padding: const EdgeInsets.only(left: 14),
@@ -212,8 +219,7 @@ class _QuestDetailScreenState extends State<QuestDetailScreen> {
                             foregroundColor: AppColors.accent,
                             side: const BorderSide(
                                 color: AppColors.accentDim, width: 1),
-                            padding:
-                                const EdgeInsets.symmetric(vertical: 14),
+                            padding: const EdgeInsets.symmetric(vertical: 14),
                             shape: const RoundedRectangleBorder(
                               borderRadius: BorderRadius.all(
                                   Radius.circular(AppRadius.button)),
@@ -248,48 +254,6 @@ class _QuestDetailScreenState extends State<QuestDetailScreen> {
   }
 }
 
-// ── Status pill ───────────────────────────────────────────────────────────────
-
-class _StatusPill extends StatelessWidget {
-  final QuestStatus status;
-
-  const _StatusPill({required this.status});
-
-  @override
-  Widget build(BuildContext context) {
-    final (label, bg, fg) = switch (status) {
-      QuestStatus.active => (
-          'ACTIVE',
-          AppColors.accentSubtle,
-          AppColors.accent,
-        ),
-      QuestStatus.completed => (
-          'COMPLETED',
-          AppColors.accent,
-          AppColors.textInverse,
-        ),
-      _ => (
-          'ACTIVE',
-          AppColors.accentSubtle,
-          AppColors.accent,
-        ),
-    };
-
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-      decoration: BoxDecoration(
-        color: bg,
-        borderRadius: BorderRadius.circular(AppRadius.chip),
-      ),
-      child: Text(
-        label,
-        style:
-            AppTypography.unboundedBold(8, fg).copyWith(letterSpacing: 0.5),
-      ),
-    );
-  }
-}
-
 // ── Character row ─────────────────────────────────────────────────────────────
 
 class _CharacterRow extends StatelessWidget {
@@ -312,8 +276,8 @@ class _CharacterRow extends StatelessWidget {
             ),
           ),
           child: const Center(
-            child: Icon(Icons.person_outline,
-                size: 18, color: AppColors.accent),
+            child:
+                Icon(Icons.person_outline, size: 18, color: AppColors.accent),
           ),
         ),
         const SizedBox(width: 12),
@@ -353,11 +317,20 @@ class _DateRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     const months = [
-      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
     ];
-    final dateStr =
-        '${months[date.month - 1]} ${date.day}, ${date.year}';
+    final dateStr = '${months[date.month - 1]} ${date.day}, ${date.year}';
 
     return Row(
       children: [
@@ -425,7 +398,8 @@ class _SubmissionSection extends StatelessWidget {
           // Photo
           if (quest.submissionPhotoPath != null) ...[
             GestureDetector(
-              onTap: () => _showImageOverlay(context, quest.submissionPhotoPath!),
+              onTap: () =>
+                  _showImageOverlay(context, quest.submissionPhotoPath!),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(AppRadius.card),
                 child: Image.file(
@@ -488,8 +462,8 @@ class _SubmissionSection extends StatelessWidget {
                 ),
                 const SizedBox(width: AppSpacing.sm),
                 Container(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 10, vertical: 3),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
                   decoration: BoxDecoration(
                     color: _difficultyColors[quest.submissionDifficulty!]
                         .withOpacity(0.15),
@@ -525,14 +499,13 @@ class _SubmissionSection extends StatelessWidget {
                             horizontal: 10, vertical: 4),
                         decoration: BoxDecoration(
                           color: AppColors.accentSubtle,
-                          borderRadius:
-                              BorderRadius.circular(AppRadius.chip),
+                          borderRadius: BorderRadius.circular(AppRadius.chip),
                           border: Border.all(color: AppColors.accentDim),
                         ),
                         child: Text(
                           e,
-                          style: AppTypography.outfitMedium(
-                              11, AppColors.accent),
+                          style:
+                              AppTypography.outfitMedium(11, AppColors.accent),
                         ),
                       ))
                   .toList(),
