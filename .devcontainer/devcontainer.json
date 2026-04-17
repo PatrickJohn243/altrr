@@ -1,13 +1,12 @@
 {
   "name": "altrr_app",
-  "image": "ghcr.io/cirruslabs/flutter:stable",
+  "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
   "features": {
-    "ghcr.io/devcontainers/features/java:1": {
-      "version": "17"
+    "ghcr.io/devcontainers/features/node:1": {
+      "version": "22"
     }
   },
-  "forwardPorts": [5554, 5555, 8080],
-  "postCreateCommand": "flutter pub get",
+  "postCreateCommand": "npm install -g @anthropic-ai/claude-code && npm install",
   "customizations": {
     "vscode": {
       "extensions": [
