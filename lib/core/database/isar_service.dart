@@ -2,6 +2,7 @@ import 'package:isar/isar.dart';
 import 'package:path_provider/path_provider.dart';
 import '../../shared/generation/character/character_roster.dart';
 import '../../shared/models/character.dart';
+import '../../shared/models/daily_stats.dart';
 import '../../shared/models/quest.dart';
 import '../../shared/models/earned_title.dart';
 import '../../shared/models/user_profile.dart';
@@ -18,7 +19,7 @@ class IsarService {
   static Future<void> init() async {
     final dir = await getApplicationDocumentsDirectory();
     instance = await Isar.open(
-      [QuestSchema, CharacterSchema, UserProfileSchema, EarnedTitleSchema],
+      [QuestSchema, CharacterSchema, UserProfileSchema, EarnedTitleSchema, DailyStatsSchema],
       directory: dir.path,
     );
     await _seedRosterIfEmpty();

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../database/isar_service.dart';
-import '../../prefs/app_preferences.dart';
+import '../config/app_preferences.dart';
 import '../utils/image_utils.dart';
 import '../../shared/models/user_profile.dart';
 
