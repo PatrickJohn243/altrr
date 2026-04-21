@@ -199,32 +199,50 @@ class _AllTitlesScreenState extends State<AllTitlesScreen> {
                 builder: (context, _) {
                   final titles = _controller.filtered;
                   if (titles.isEmpty) {
-                    return TitlesEmptyState(query: _controller.query);
-                  }
-                  return ListView.separated(
-                    padding: const EdgeInsets.only(
-                      left: AppSpacing.screenPadding,
-                      right: AppSpacing.screenPadding,
-                      bottom: AppSpacing.xxl,
-                    ),
-                    itemCount: titles.length,
-                    separatorBuilder: (_, __) =>
-                        const SizedBox(height: AppSpacing.sm),
-                    itemBuilder: (context, i) {
-                      final t = titles[i];
-                      return TitleRowCard(
-                        icon: Icon(
-                          _iconForTitle(t),
-                          size: 18,
-                          color: AppColors.textMuted,
+                    return RefreshIndicator(
+                      color: AppColors.accent,
+                      backgroundColor: AppColors.bgSurface,
+                      displacement: 24,
+                      onRefresh: _controller.reload,
+                      child: SingleChildScrollView(
+                        physics: const AlwaysScrollableScrollPhysics(),
+                        child: SizedBox(
+                          height: MediaQuery.of(context).size.height * 0.5,
+                          child: TitlesEmptyState(query: _controller.query),
                         ),
-                        titleName: t.titleText,
-                        subtitle: _formatDate(t.earnedAt),
-                        isNew: !t.isSeen,
-                        onTap: () =>
-                            TitleEarnedSheet.show(context, titles: [t]),
-                      );
-                    },
+                      ),
+                    );
+                  }
+                  return RefreshIndicator(
+                    color: AppColors.accent,
+                    backgroundColor: AppColors.bgSurface,
+                    onRefresh: _controller.reload,
+                    child: ListView.separated(
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      padding: const EdgeInsets.only(
+                        left: AppSpacing.screenPadding,
+                        right: AppSpacing.screenPadding,
+                        bottom: AppSpacing.xxl,
+                      ),
+                      itemCount: titles.length,
+                      separatorBuilder: (_, __) =>
+                          const SizedBox(height: AppSpacing.sm),
+                      itemBuilder: (context, i) {
+                        final t = titles[i];
+                        return TitleRowCard(
+                          icon: Icon(
+                            _iconForTitle(t),
+                            size: 18,
+                            color: AppColors.textMuted,
+                          ),
+                          titleName: t.titleText,
+                          subtitle: _formatDate(t.earnedAt),
+                          isNew: !t.isSeen,
+                          onTap: () =>
+                              TitleEarnedSheet.show(context, titles: [t]),
+                        );
+                      },
+                    ),
                   );
                 },
               ),

@@ -25,6 +25,7 @@ class ProfileScreen extends StatefulWidget {
 class _ProfileScreenState extends State<ProfileScreen> {
   final Isar _isar = IsarService.instance;
   Map<String, int> _categoryTitleCounts = {};
+  List<EarnedTitle> _recentTitles = [];
   int _completedCount = 0;
   int _titlesCount = 0;
 
@@ -42,6 +43,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
         counts[t.category!] = (counts[t.category!] ?? 0) + 1;
       }
     }
+    final recent = (List<EarnedTitle>.from(allTitles)
+          ..sort((a, b) => b.earnedAt.compareTo(a.earnedAt)))
+        .take(3)
+        .toList();
     final completed = await _isar.quests
         .filter()
         .statusEqualTo(QuestStatus.completed)
@@ -49,6 +54,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     if (mounted) {
       setState(() {
         _categoryTitleCounts = counts;
+        _recentTitles = recent;
         _completedCount = completed;
         _titlesCount = allTitles.length;
       });
@@ -103,26 +109,35 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     const SizedBox(height: AppSpacing.xl),
                     const SectionHeader(label: 'RECENT TITLES'),
                     const SizedBox(height: AppSpacing.md),
-                    const QuestNewRow(
-                      icon: Icons.restaurant_outlined,
-                      category: 'Food',
-                      questTitle: 'Try a new cuisine',
-                      isNew: true,
-                    ),
-                    const SizedBox(height: AppSpacing.sm),
-                    const QuestNewRow(
-                      icon: Icons.directions_walk_outlined,
-                      category: 'People',
-                      questTitle: 'Strike up a conversation',
-                      isNew: true,
-                    ),
-                    const SizedBox(height: AppSpacing.sm),
-                    const QuestNewRow(
-                      icon: Icons.fitness_center_outlined,
-                      category: 'Gym',
-                      questTitle: 'Hit the gym early',
-                      isNew: false,
-                    ),
+                    if (_recentTitles.isEmpty)
+                      const SizedBox.shrink()
+                    else
+                      ...List.generate(_recentTitles.length, (i) {
+                        final t = _recentTitles[i];
+                        final isNew = !t.isSeen;
+                        return Padding(
+                          padding: EdgeInsets.only(
+                              bottom: i < _recentTitles.length - 1
+                                  ? AppSpacing.sm
+                                  : 0),
+                          child: QuestNewRow(
+                            icon: QuestCategories.iconFor(t.category ?? ''),
+                            category: t.category ?? '',
+                            questTitle: t.titleText,
+                            isNew: isNew,
+                            onTap: () async {
+                              if (!t.isSeen) {
+                                await _isar.writeTxn(() async {
+                                  t.isSeen = true;
+                                  await _isar.earnedTitles.put(t);
+                                });
+                                setState(() {});
+                              }
+                              if (mounted) context.push('/title', extra: t);
+                            },
+                          ),
+                        );
+                      }),
                     const SizedBox(height: AppSpacing.xl),
                     SectionHeader(
                       label: 'ALL TITLES',

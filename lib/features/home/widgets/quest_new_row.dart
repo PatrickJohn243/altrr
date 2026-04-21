@@ -9,6 +9,7 @@ class QuestNewRow extends StatelessWidget {
   final String category;
   final String questTitle;
   final bool isNew;
+  final VoidCallback? onTap;
 
   const QuestNewRow({
     super.key,
@@ -16,56 +17,60 @@ class QuestNewRow extends StatelessWidget {
     required this.category,
     required this.questTitle,
     required this.isNew,
+    this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 72,
-      decoration: const BoxDecoration(
-        color: AppColors.bgSurface,
-        borderRadius: BorderRadius.all(Radius.circular(AppRadius.card)),
-        border: Border(
-          top: BorderSide(color: AppColors.borderSubtle),
-          left: BorderSide(color: AppColors.borderSubtle),
-          right: BorderSide(color: AppColors.borderSubtle),
-          bottom: BorderSide(color: AppColors.borderSubtle, width: 3),
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        height: 72,
+        decoration: const BoxDecoration(
+          color: AppColors.bgSurface,
+          borderRadius: BorderRadius.all(Radius.circular(AppRadius.card)),
+          border: Border(
+            top: BorderSide(color: AppColors.borderSubtle),
+            left: BorderSide(color: AppColors.borderSubtle),
+            right: BorderSide(color: AppColors.borderSubtle),
+            bottom: BorderSide(color: AppColors.borderSubtle, width: 3),
+          ),
         ),
-      ),
-      child: ClipRRect(
-        borderRadius: const BorderRadius.all(Radius.circular(AppRadius.card)),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(
-              horizontal: AppSpacing.cardPaddingMd),
-          child: Row(
-            children: [
-              Container(
-                width: 36,
-                height: 36,
-                decoration: const BoxDecoration(
-                  color: AppColors.borderSubtle,
-                  borderRadius:
-                      BorderRadius.all(Radius.circular(AppRadius.icon)),
+        child: ClipRRect(
+          borderRadius: const BorderRadius.all(Radius.circular(AppRadius.card)),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(
+                horizontal: AppSpacing.cardPaddingMd),
+            child: Row(
+              children: [
+                Container(
+                  width: 36,
+                  height: 36,
+                  decoration: const BoxDecoration(
+                    color: AppColors.borderSubtle,
+                    borderRadius:
+                        BorderRadius.all(Radius.circular(AppRadius.icon)),
+                  ),
+                  child: Icon(icon, size: 18, color: AppColors.textMuted),
                 ),
-                child: Icon(icon, size: 18, color: AppColors.textMuted),
-              ),
-              const SizedBox(width: 14),
-              Expanded(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      category.toUpperCase(),
-                      style: AppTypography.categoryLabel,
-                    ),
-                    const SizedBox(height: 2),
-                    Text(questTitle, style: AppTypography.cardTitle),
-                  ],
+                const SizedBox(width: 14),
+                Expanded(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        category.toUpperCase(),
+                        style: AppTypography.categoryLabel,
+                      ),
+                      const SizedBox(height: 2),
+                      Text(questTitle, style: AppTypography.cardTitle),
+                    ],
+                  ),
                 ),
-              ),
-              if (isNew) AppBadge.newLabel(),
-            ],
+                if (isNew) AppBadge.newLabel(),
+              ],
+            ),
           ),
         ),
       ),

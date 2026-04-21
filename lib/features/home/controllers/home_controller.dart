@@ -9,6 +9,7 @@ import '../../../shared/models/earned_title.dart';
 class HomeController extends ChangeNotifier {
   final QuestsController _questsController;
   final Isar _isar = IsarService.instance;
+  bool _disposed = false;
 
   List<Quest> recentQuests = [];
   int streakCount = 0;
@@ -51,7 +52,7 @@ class HomeController extends ChangeNotifier {
     }
     categoryQuestCounts = questCounts;
 
-    notifyListeners();
+    if (!_disposed) notifyListeners();
   }
 
   // ── Streak helpers ─────────────────────────────────────────────────────────
@@ -123,6 +124,7 @@ class HomeController extends ChangeNotifier {
 
   @override
   void dispose() {
+    _disposed = true;
     _questsController.removeListener(_load);
     super.dispose();
   }

@@ -3,10 +3,11 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/widgets/app_bar_main.dart';
+import '../../../../core/theme/app_typography.dart';
+import '../../../../core/widgets/break_state_card.dart';
+import '../../../../core/widgets/challenge_quest_card.dart';
 import '../../../../core/widgets/quest_display_card.dart';
 import '../../../../core/widgets/streak_card.dart';
-import '../../../../core/widgets/title_card.dart' show TitleCategoryCard;
-import '../../../../core/widgets/quest_row_card.dart';
 import '../../../../core/widgets/section_header.dart';
 import '../../controllers/home_controller.dart';
 import '../../../quests/controllers/quests_controller_provider.dart';
@@ -20,6 +21,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   HomeController? _homeController;
+  final _scrollController = ScrollController();
   bool _initialized = false;
 
   @override
@@ -35,6 +37,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void dispose() {
     _homeController?.dispose();
+    _scrollController.dispose();
     super.dispose();
   }
 
@@ -50,20 +53,21 @@ class _HomeScreenState extends State<HomeScreen> {
       body: SafeArea(
         child: Column(
           children: [
-            const AppBarMain(),
+            AppBarMain(scrollController: _scrollController),
             Expanded(
               child: ListenableBuilder(
                 listenable: homeCtrl,
                 builder: (context, _) {
                   final activeQuest = questsCtrl.activeQuest;
                   return SingleChildScrollView(
+                    controller: _scrollController,
                     padding: const EdgeInsets.symmetric(
                       horizontal: AppSpacing.screenPadding,
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        // ── Active quest ─────────────────────────────────────
+                        // ── Active quest / break state ───────────────────────
                         AnimatedSwitcher(
                           duration: const Duration(milliseconds: 350),
                           transitionBuilder: (child, animation) =>
@@ -79,33 +83,66 @@ class _HomeScreenState extends State<HomeScreen> {
                               child: child,
                             ),
                           ),
-                          child: activeQuest == null
-                              ? const SizedBox.shrink()
-                              : QuestDisplayCard(
-                                  key: ValueKey(activeQuest.id),
-                                  questTitle: activeQuest.title,
-                                  description: activeQuest.description,
-                                  expiryText:
-                                      _expiryText(activeQuest.expiresAt),
-                                  category: activeQuest.category,
-                                  questsInCategory: homeCtrl
-                                          .categoryQuestCounts[
-                                              activeQuest.category] ??
-                                      0,
-                                  assignedByAltrr: activeQuest.assignedByAltrr,
-                                  onComplete: () async {
-                                    final quest = questsCtrl.activeQuest;
-                                    if (quest == null) return;
-                                    final saved = await context.push<bool>(
-                                      '/submit',
-                                      extra: quest,
-                                    );
-                                    if (saved == true)
-                                      questsCtrl.completeQuest();
-                                  },
-                                  onSkip: questsCtrl.skipQuest,
-                                ),
+                          child: questsCtrl.isBreakActive
+                              ? BreakStateCard(
+                                  key: const ValueKey('break'),
+                                  onEndEarly: questsCtrl.endBreakEarly,
+                                )
+                              : activeQuest == null
+                                  ? const SizedBox.shrink()
+                                  : QuestDisplayCard(
+                                      key: ValueKey(activeQuest.id),
+                                      questTitle: activeQuest.title,
+                                      description: activeQuest.description,
+                                      expiresAt: activeQuest.expiresAt,
+                                      category: activeQuest.category,
+                                      questsInCategory: homeCtrl
+                                              .categoryQuestCounts[
+                                                  activeQuest.category] ??
+                                          0,
+                                      assignedByAltrr:
+                                          activeQuest.assignedByAltrr,
+                                      onComplete: () async {
+                                        final quest = questsCtrl.activeQuest;
+                                        if (quest == null) return;
+                                        final saved =
+                                            await context.push<bool>(
+                                          '/submit',
+                                          extra: quest,
+                                        );
+                                        if (saved == true)
+                                          questsCtrl.completeQuest();
+                                      },
+                                      onSkip: questsCtrl.skipQuest,
+                                    ),
                         ),
+                        // ── Active challenge quest ───────────────────────────
+                        if (questsCtrl.activeChallengeQuest != null) ...[
+                          const SizedBox(height: AppSpacing.sectionGap),
+                          const SectionHeader(label: 'YOUR CHALLENGE'),
+                          const SizedBox(height: AppSpacing.itemGap),
+                          ChallengeQuestCard(
+                            key: ValueKey(
+                                'challenge-${questsCtrl.activeChallengeQuest!.id}'),
+                            questTitle:
+                                questsCtrl.activeChallengeQuest!.title,
+                            description:
+                                questsCtrl.activeChallengeQuest!.description,
+                            category:
+                                questsCtrl.activeChallengeQuest!.category,
+                            expiresAt:
+                                questsCtrl.activeChallengeQuest!.expiresAt,
+                            onTap: () async {
+                              final result = await context.push<String>(
+                                '/challenge',
+                                extra: questsCtrl.activeChallengeQuest,
+                              );
+                              if (result == 'complete') questsCtrl.completeChallenge();
+                              if (result == 'abandon') questsCtrl.abandonChallenge();
+                            },
+                          ),
+                        ],
+
                         const SizedBox(height: AppSpacing.sectionGap),
 
                         // ── THIS WEEK streak ─────────────────────────────────
@@ -120,62 +157,12 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                         const SizedBox(height: AppSpacing.sectionGap),
 
-                        // ── YOUR TITLES ──────────────────────────────────────
-                        SectionHeader(
-                            label: 'YOUR TITLES',
-                            seeAll: () => context.push('/titles')),
+                        // ── STATS ────────────────────────────────────────────
+                        const SectionHeader(label: 'YOUR PROGRESS'),
                         const SizedBox(height: AppSpacing.itemGap),
-                        SizedBox(
-                          height: 155,
-                          child: ListView.separated(
-                            scrollDirection: Axis.horizontal,
-                            clipBehavior: Clip.none,
-                            itemCount: _categories.length,
-                            separatorBuilder: (_, __) =>
-                                const SizedBox(width: AppSpacing.itemGap),
-                            itemBuilder: (context, i) {
-                              final cat = _categories[i];
-                              final count =
-                                  homeCtrl.categoryTitleCounts[cat.key] ?? 0;
-                              return TitleCategoryCard(
-                                category: cat.label,
-                                icon: cat.icon,
-                                titleCount: count,
-                                locked: count == 0,
-                                onTap: () => context.push(
-                                  '/titles',
-                                  extra: cat.key,
-                                ),
-                              );
-                            },
-                          ),
+                        _StatsAccessCard(
+                          onTap: () => context.push('/stats'),
                         ),
-                        const SizedBox(height: AppSpacing.sectionGap),
-
-                        // ── RECENT QUESTS ────────────────────────────────────
-                        SectionHeader(
-                            label: 'RECENT QUESTS',
-                            seeAll: () => context.push('/all-quests')),
-                        const SizedBox(height: AppSpacing.itemGap),
-                        if (homeCtrl.recentQuests.isEmpty)
-                          const SizedBox.shrink()
-                        else
-                          ...homeCtrl.recentQuests.map((q) => Padding(
-                                padding: const EdgeInsets.only(
-                                    bottom: AppSpacing.itemGap),
-                                child: QuestRowCard(
-                                  icon: Icon(
-                                    _iconForCategory(q.category),
-                                    size: 18,
-                                    color: AppColors.textMuted,
-                                  ),
-                                  category: q.category,
-                                  questTitle: q.title,
-                                  date: _formatDate(
-                                      q.completedAt ?? q.assignedAt),
-                                  onTap: () => context.push('/quest', extra: q),
-                                ),
-                              )),
                         const SizedBox(height: AppSpacing.sectionGap),
                       ],
                     ),
@@ -189,74 +176,67 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  // ── Category definitions ───────────────────────────────────────────────────
+}
 
-  static const _categories = [
-    _CategoryDef('physical', 'Physical', Icons.fitness_center),
-    _CategoryDef('mental', 'Mental', Icons.psychology),
-    _CategoryDef('social', 'Social', Icons.people),
-    _CategoryDef('cooking', 'Cooking', Icons.restaurant),
-    _CategoryDef('learning', 'Learning', Icons.school),
-    _CategoryDef('explore', 'Explore', Icons.travel_explore),
-    _CategoryDef('hobby', 'Hobby', Icons.palette),
-    _CategoryDef('reflection', 'Reflect', Icons.self_improvement),
-  ];
+// ── Stats access card ──────────────────────────────────────────────────────────
 
-  static String _expiryText(DateTime expiresAt) {
-    final remaining = expiresAt.difference(DateTime.now());
-    if (remaining.isNegative) return 'Expired';
-    final hours = remaining.inHours;
-    if (hours < 1) return 'Expires in ${remaining.inMinutes}m';
-    return 'Expires in ${hours}h';
-  }
+class _StatsAccessCard extends StatelessWidget {
+  final VoidCallback onTap;
+  const _StatsAccessCard({required this.onTap});
 
-  static String _formatDate(DateTime dt) {
-    const months = [
-      'Jan',
-      'Feb',
-      'Mar',
-      'Apr',
-      'May',
-      'Jun',
-      'Jul',
-      'Aug',
-      'Sep',
-      'Oct',
-      'Nov',
-      'Dec'
-    ];
-    return '${months[dt.month - 1]} ${dt.day}';
-  }
-
-  static IconData _iconForCategory(String category) {
-    switch (category.toLowerCase()) {
-      case 'physical':
-        return Icons.fitness_center;
-      case 'mental':
-        return Icons.psychology;
-      case 'social':
-        return Icons.people;
-      case 'cooking':
-        return Icons.restaurant;
-      case 'learning':
-        return Icons.school;
-      case 'explore':
-        return Icons.travel_explore;
-      case 'hobby':
-        return Icons.palette;
-      case 'reflection':
-        return Icons.self_improvement;
-      default:
-        return Icons.star_outline;
-    }
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.all(AppSpacing.cardPadding),
+        decoration: BoxDecoration(
+          color: AppColors.bgSurface,
+          borderRadius: BorderRadius.circular(AppRadius.card),
+          border: const Border(
+            top: BorderSide(color: AppColors.borderSubtle),
+            left: BorderSide(color: AppColors.borderSubtle),
+            right: BorderSide(color: AppColors.borderSubtle),
+            bottom: BorderSide(color: AppColors.borderSubtle, width: 3),
+          ),
+        ),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Container(
+              width: 44,
+              height: 44,
+              decoration: BoxDecoration(
+                color: AppColors.accentSubtle,
+                borderRadius: BorderRadius.circular(AppRadius.icon),
+              ),
+              child: const Icon(
+                Icons.show_chart_rounded,
+                color: AppColors.accent,
+                size: 22,
+              ),
+            ),
+            const SizedBox(width: AppSpacing.lg),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'See how far you\'ve come.',
+                    style: AppTypography.unboundedBold(12, AppColors.textPrimary),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    'Quests, streaks, and growth — all in one place.',
+                    style: AppTypography.outfitMedium(12, AppColors.textMuted),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }
 
-// ── Category definition ────────────────────────────────────────────────────────
-
-class _CategoryDef {
-  final String key;
-  final String label;
-  final IconData icon;
-  const _CategoryDef(this.key, this.label, this.icon);
-}

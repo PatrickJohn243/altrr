@@ -1,109 +1,121 @@
 import 'package:flutter/material.dart';
+import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../../../core/widgets/app_bar_back.dart';
 import '../../../../core/widgets/section_header.dart';
+import '../../controllers/notifications_controller.dart';
 import '../../widgets/notification_row.dart';
 
-class NotificationsScreen extends StatelessWidget {
+class NotificationsScreen extends StatefulWidget {
   const NotificationsScreen({super.key});
 
   @override
+  State<NotificationsScreen> createState() => _NotificationsScreenState();
+}
+
+class _NotificationsScreenState extends State<NotificationsScreen> {
+  final _ctrl = NotificationsController.instance;
+
+  @override
+  void initState() {
+    super.initState();
+    _ctrl.addListener(_rebuild);
+    // Mark all read when screen opens
+    _ctrl.markAllRead();
+  }
+
+  @override
+  void dispose() {
+    _ctrl.removeListener(_rebuild);
+    super.dispose();
+  }
+
+  void _rebuild() => setState(() {});
+
+  @override
   Widget build(BuildContext context) {
+    final today = _ctrl.todayItems;
+    final earlier = _ctrl.earlierItems;
+    final isEmpty = today.isEmpty && earlier.isEmpty;
+
     return Scaffold(
-      backgroundColor: _bg,
+      backgroundColor: AppColors.bgPrimary,
       body: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            AppBarBack(),
+            const AppBarBack(),
             Padding(
               padding: const EdgeInsets.symmetric(
                   horizontal: AppSpacing.screenPadding),
-              child: Text('Notifications', style: AppTypography.screenTitle),
+              child:
+                  Text('Notifications', style: AppTypography.screenTitle),
             ),
             const SizedBox(height: AppSpacing.xl),
             Expanded(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(
-                    horizontal: AppSpacing.screenPadding),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const SectionHeader(label: 'TODAY'),
-                    const SizedBox(height: AppSpacing.md),
-                    const NotificationRow(
-                      icon: Icons.explore_outlined,
-                      title: 'New quest assigned',
-                      subtitle:
-                          "Your quest for today is ready — don't let it expire.",
-                      time: '2m ago',
-                      isUnread: false,
+              child: isEmpty
+                  ? Center(
+                      child: Text(
+                        'No notifications yet.',
+                        style: AppTypography.bodyMedium,
+                      ),
+                    )
+                  : SingleChildScrollView(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: AppSpacing.screenPadding),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          if (today.isNotEmpty) ...[
+                            const SectionHeader(label: 'TODAY'),
+                            const SizedBox(height: AppSpacing.md),
+                            ...today.map((n) => Padding(
+                                  padding: const EdgeInsets.only(
+                                      bottom: AppSpacing.sm),
+                                  child: NotificationRow(
+                                    icon: _iconFor(n.type),
+                                    title: n.title,
+                                    subtitle: n.body,
+                                    time: NotificationsController
+                                        .relativeTime(n.timestamp),
+                                    isUnread: !n.isRead,
+                                  ),
+                                )),
+                          ],
+                          if (earlier.isNotEmpty) ...[
+                            if (today.isNotEmpty)
+                              const SizedBox(height: AppSpacing.xl),
+                            const SectionHeader(label: 'EARLIER'),
+                            const SizedBox(height: AppSpacing.md),
+                            ...earlier.map((n) => Padding(
+                                  padding: const EdgeInsets.only(
+                                      bottom: AppSpacing.sm),
+                                  child: NotificationRow(
+                                    icon: _iconFor(n.type),
+                                    title: n.title,
+                                    subtitle: n.body,
+                                    time: NotificationsController
+                                        .relativeTime(n.timestamp),
+                                    isUnread: !n.isRead,
+                                  ),
+                                )),
+                          ],
+                          const SizedBox(height: AppSpacing.xxl),
+                        ],
+                      ),
                     ),
-                    const SizedBox(height: AppSpacing.sm),
-                    const NotificationRow(
-                      icon: Icons.local_fire_department_outlined,
-                      title: 'Streak at risk',
-                      subtitle:
-                          'You have 2 hours left to keep your 7-day streak alive.',
-                      time: '1h ago',
-                      isUnread: true,
-                    ),
-                    const SizedBox(height: AppSpacing.sm),
-                    const NotificationRow(
-                      icon: Icons.emoji_events_outlined,
-                      title: 'Title earned',
-                      subtitle:
-                          'You unlocked "The Connector" — People category.',
-                      time: '3h ago',
-                      isUnread: false,
-                    ),
-                    const SizedBox(height: AppSpacing.xl),
-                    const SectionHeader(label: 'EARLIER'),
-                    const SizedBox(height: AppSpacing.md),
-                    const NotificationRow(
-                      icon: Icons.timer_outlined,
-                      title: 'Quest expiring soon',
-                      subtitle:
-                          '"Strike up a conversation" was expiring — hope you did it.',
-                      time: 'Yesterday',
-                      isUnread: false,
-                    ),
-                    const SizedBox(height: AppSpacing.sm),
-                    const NotificationRow(
-                      icon: Icons.explore_outlined,
-                      title: 'New quest assigned',
-                      subtitle: 'A new quest was waiting for you yesterday.',
-                      time: 'Yesterday',
-                      isUnread: false,
-                    ),
-                    const SizedBox(height: AppSpacing.sm),
-                    const NotificationRow(
-                      icon: Icons.local_fire_department_outlined,
-                      title: '7-day streak reached',
-                      subtitle:
-                          "You've been showing up for 7 days straight. Keep going.",
-                      time: '2 days ago',
-                      isUnread: false,
-                    ),
-                    const SizedBox(height: AppSpacing.sm),
-                    const NotificationRow(
-                      icon: Icons.emoji_events_outlined,
-                      title: 'Title earned',
-                      subtitle: 'You unlocked "The Taster" — Food category.',
-                      time: '3 days ago',
-                      isUnread: false,
-                    ),
-                    const SizedBox(height: AppSpacing.xxl),
-                  ],
-                ),
-              ),
             ),
           ],
         ),
       ),
     );
   }
-}
 
-const _bg = Color(0xFF121212);
+  static IconData _iconFor(String type) => switch (type) {
+        'quest' => Icons.explore_outlined,
+        'streak' => Icons.local_fire_department_outlined,
+        'title' => Icons.emoji_events_outlined,
+        _ => Icons.notifications_outlined,
+      };
+}

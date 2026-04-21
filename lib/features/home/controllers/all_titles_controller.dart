@@ -60,6 +60,8 @@ class AllTitlesController extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> reload() => _load();
+
   List<EarnedTitle> get filtered {
     var list = _all;
 
