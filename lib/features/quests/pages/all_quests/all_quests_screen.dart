@@ -46,34 +46,9 @@ class _AllQuestsScreenState extends State<AllQuestsScreen> {
               padding: const EdgeInsets.symmetric(
                 horizontal: AppSpacing.screenPadding,
               ),
-              child: ListenableBuilder(
-                listenable: _controller,
-                builder: (context, _) => Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Text(
-                      'COMPLETED',
-                      style: AppTypography.unboundedBlack(22, AppColors.textPrimary),
-                    ),
-                    const SizedBox(width: AppSpacing.md),
-                    if (_controller.totalCount > 0)
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 10,
-                          vertical: 4,
-                        ),
-                        decoration: BoxDecoration(
-                          color: AppColors.bgElevated,
-                          borderRadius: BorderRadius.circular(AppRadius.chip),
-                          border: Border.all(color: AppColors.borderMid),
-                        ),
-                        child: Text(
-                          '${_controller.totalCount}',
-                          style: AppTypography.unboundedBold(11, AppColors.textMuted),
-                        ),
-                      ),
-                  ],
-                ),
+              child: Text(
+                'COMPLETED',
+                style: AppTypography.unboundedBlack(22, AppColors.textPrimary),
               ),
             ),
 
@@ -128,30 +103,49 @@ class _AllQuestsScreenState extends State<AllQuestsScreen> {
                 builder: (context, _) {
                   final quests = _controller.filtered;
                   if (quests.isEmpty) {
-                    return QuestsEmptyState(query: _controller.query);
-                  }
-                  return ListView.separated(
-                    padding: const EdgeInsets.only(
-                      left: AppSpacing.screenPadding,
-                      right: AppSpacing.screenPadding,
-                      bottom: AppSpacing.xxl,
-                    ),
-                    itemCount: quests.length,
-                    separatorBuilder: (_, __) => const SizedBox(height: AppSpacing.sm),
-                    itemBuilder: (context, i) {
-                      final q = quests[i];
-                      return QuestRowCard(
-                        icon: Icon(
-                          QuestCategories.iconFor(q.category),
-                          size: 18,
-                          color: AppColors.textMuted,
+                    return RefreshIndicator(
+                      color: AppColors.accent,
+                      backgroundColor: AppColors.bgSurface,
+                      displacement: 24,
+                      onRefresh: _controller.reload,
+                      child: SingleChildScrollView(
+                        physics: const AlwaysScrollableScrollPhysics(),
+                        child: SizedBox(
+                          height: MediaQuery.of(context).size.height * 0.6,
+                          child: QuestsEmptyState(query: _controller.query),
                         ),
-                        category: q.category,
-                        questTitle: q.title,
-                        date: _formatDate(q.completedAt ?? q.assignedAt),
-                        onTap: () => context.push('/quest', extra: q),
-                      );
-                    },
+                      ),
+                    );
+                  }
+                  return RefreshIndicator(
+                    color: AppColors.accent,
+                    backgroundColor: AppColors.bgSurface,
+                    displacement: 24,
+                    onRefresh: _controller.reload,
+                    child: ListView.separated(
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      padding: const EdgeInsets.only(
+                        left: AppSpacing.screenPadding,
+                        right: AppSpacing.screenPadding,
+                        bottom: AppSpacing.xxl,
+                      ),
+                      itemCount: quests.length,
+                      separatorBuilder: (_, __) => const SizedBox(height: AppSpacing.sm),
+                      itemBuilder: (context, i) {
+                        final q = quests[i];
+                        return QuestRowCard(
+                          icon: Icon(
+                            QuestCategories.iconFor(q.category),
+                            size: 18,
+                            color: AppColors.textMuted,
+                          ),
+                          category: q.category,
+                          questTitle: q.title,
+                          date: _formatDate(q.completedAt ?? q.assignedAt),
+                          onTap: () => context.push('/quest', extra: q),
+                        );
+                      },
+                    ),
                   );
                 },
               ),

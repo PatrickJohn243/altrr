@@ -13,15 +13,14 @@ import '../../../../shared/models/quest.dart';
 
 enum _Difficulty { easy, easyMod, moderate, modHard, hard }
 
-// Only indices 0, 2, 4 show labels; 1 and 3 are empty.
 const _difficultyLabels = ['Easy', '', 'Moderate', '', 'Hard'];
 
 const _difficultyColors = [
-  Color(0xFFC8F135), // lime — easy
-  Color(0xFFE8D31A), // lime→amber blend
-  Color(0xFFFFB800), // amber — moderate
-  Color(0xFFFF8226), // amber→red blend
-  Color(0xFFFF4C4C), // red — hard
+  Color(0xFFC8F135),
+  Color(0xFFE8D31A),
+  Color(0xFFFFB800),
+  Color(0xFFFF8226),
+  Color(0xFFFF4C4C),
 ];
 
 // ── Emotion ───────────────────────────────────────────────────────────────────
@@ -91,6 +90,7 @@ class _QuestSubmissionScreenState extends State<QuestSubmissionScreen> {
 
   Future<void> _save() async {
     final isar = IsarService.instance;
+
     await isar.writeTxn(() async {
       final quest = await isar.quests.get(widget.quest.id);
       if (quest == null) return;
@@ -106,6 +106,7 @@ class _QuestSubmissionScreenState extends State<QuestSubmissionScreen> {
       quest.submissionPhotoPath = _photo?.path;
       await isar.quests.put(quest);
     });
+
     if (mounted) context.pop(true);
   }
 

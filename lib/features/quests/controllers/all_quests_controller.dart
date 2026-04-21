@@ -19,6 +19,8 @@ class AllQuestsController extends ChangeNotifier {
     _load();
   }
 
+  Future<void> reload() => _load();
+
   Future<void> _load() async {
     _all = await _isar.quests
         .filter()
