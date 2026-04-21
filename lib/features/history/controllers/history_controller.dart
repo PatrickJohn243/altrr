@@ -38,6 +38,8 @@ class HistoryController extends ChangeNotifier {
 
   String _query = '';
   List<HistorySection> _allLoaded = [];
+  bool isLoading = true;
+  bool _disposed = false;
 
   String get query => _query;
 
@@ -66,6 +68,7 @@ class HistoryController extends ChangeNotifier {
     // Sort days newest first.
     final sortedDays = byDay.keys.toList()..sort((a, b) => b.compareTo(a));
 
+    isLoading = false;
     _allLoaded = sortedDays.map((day) {
       final String label;
       if (day == today) {
@@ -98,7 +101,7 @@ class HistoryController extends ChangeNotifier {
       return HistorySection(label: label, quests: entries);
     }).toList();
 
-    notifyListeners();
+    if (!_disposed) notifyListeners();
   }
 
   List<HistorySection> get filteredSections {
@@ -116,6 +119,8 @@ class HistoryController extends ChangeNotifier {
         .where((s) => s.quests.isNotEmpty)
         .toList();
   }
+
+  Future<void> reload() => _load();
 
   void onSearchChanged(String value) {
     _query = value;
@@ -149,6 +154,7 @@ class HistoryController extends ChangeNotifier {
 
   @override
   void dispose() {
+    _disposed = true;
     searchController.dispose();
     super.dispose();
   }

@@ -5,6 +5,7 @@ import '../../../core/widgets/app_bar_search.dart';
 import '../controllers/history_controller.dart';
 import '../widgets/date_section_widget.dart';
 import '../widgets/history_empty_state.dart';
+import '../widgets/history_skeleton.dart';
 
 class HistoryScreen extends StatefulWidget {
   const HistoryScreen({super.key});
@@ -44,16 +45,36 @@ class _HistoryScreenState extends State<HistoryScreen> {
               child: ListenableBuilder(
                 listenable: _controller,
                 builder: (context, _) {
+                  if (_controller.isLoading) return const HistorySkeleton();
                   final sections = _controller.filteredSections;
-                  return sections.isEmpty
-                      ? HistoryEmptyState(query: _controller.query)
-                      : ListView.builder(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: AppSpacing.screenPadding),
-                          itemCount: sections.length,
-                          itemBuilder: (context, i) =>
-                              DateSectionWidget(section: sections[i]),
-                        );
+                  if (sections.isEmpty) {
+                    return RefreshIndicator(
+                      color: AppColors.accent,
+                      backgroundColor: AppColors.bgSurface,
+                      displacement: 24,
+                      onRefresh: _controller.reload,
+                      child: SingleChildScrollView(
+                        physics: const AlwaysScrollableScrollPhysics(),
+                        child: SizedBox(
+                          height: MediaQuery.of(context).size.height * 0.6,
+                          child: HistoryEmptyState(query: _controller.query),
+                        ),
+                      ),
+                    );
+                  }
+                  return RefreshIndicator(
+                    color: AppColors.accent,
+                    backgroundColor: AppColors.bgSurface,
+                    onRefresh: _controller.reload,
+                    child: ListView.builder(
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: AppSpacing.screenPadding),
+                      itemCount: sections.length,
+                      itemBuilder: (context, i) =>
+                          DateSectionWidget(section: sections[i]),
+                    ),
+                  );
                 },
               ),
             ),
