@@ -7,6 +7,9 @@ import '../../../core/widgets/app_bar_main.dart';
 import '../../../core/widgets/section_header.dart';
 import '../../../core/widgets/settings_card.dart';
 import '../../../core/services/alert_service.dart';
+import '../../../core/services/notification_service.dart';
+import '../../../features/home/controllers/notifications_controller.dart';
+import '../../../shared/models/app_notification.dart';
 import '../controllers/settings_controller.dart';
 
 class SettingsScreen extends StatefulWidget {
@@ -29,6 +32,42 @@ class _SettingsScreenState extends State<SettingsScreen> {
   void dispose() {
     _controller.dispose();
     super.dispose();
+  }
+
+  Future<void> _sendTestNotification() async {
+    const title = 'Test notification';
+    const body = 'This is a test from Altrr. Notifications are working.';
+
+    // Fire the real phone notification
+    await NotificationService.showNow(
+      id: 99,
+      title: title,
+      body: body,
+    );
+
+    // Add to in-app notifications list
+    await NotificationsController.instance.add(
+      AppNotification(
+        id: DateTime.now().millisecondsSinceEpoch.toString(),
+        type: 'test',
+        title: title,
+        body: body,
+        timestamp: DateTime.now(),
+      ),
+    );
+
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Notification sent.',
+            style: AppTypography.outfitMedium(13, AppColors.textPrimary),
+          ),
+          backgroundColor: AppColors.bgSurface,
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+    }
   }
 
   @override
@@ -69,7 +108,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           color: AppColors.textMuted, size: 18),
                       label: 'Quest preferences',
                       sublabel: 'Customize your quest types',
-                      onTap: () {},
+                      onTap: () => context.push('/quest-preferences'),
                     ),
                     const SizedBox(height: AppSpacing.xl),
                     ListenableBuilder(
@@ -97,6 +136,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           ),
                         ],
                       ),
+                    ),
+                    const SizedBox(height: AppSpacing.xl),
+                    // DEBUG — remove before release
+                    SettingsCard(
+                      icon: const Icon(Icons.notifications_active_outlined,
+                          color: AppColors.accent, size: 18),
+                      label: 'Test notification',
+                      sublabel: 'Fires a phone + in-app notification',
+                      onTap: _sendTestNotification,
                     ),
                     const SizedBox(height: AppSpacing.xxxl),
                     SizedBox(

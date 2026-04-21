@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import '../../../prefs/app_preferences.dart';
+import '../../../core/config/app_preferences.dart';
+import '../../../core/services/notification_service.dart';
 
 class SettingsController extends ChangeNotifier {
   bool _streakReminder = AppPreferences.streakReminder;
@@ -11,12 +12,22 @@ class SettingsController extends ChangeNotifier {
   void setStreakReminder(bool value) {
     _streakReminder = value;
     AppPreferences.setStreakReminder(value);
+    if (value) {
+      NotificationService.scheduleStreakReminder();
+    } else {
+      NotificationService.cancelStreakReminder();
+    }
     notifyListeners();
   }
 
   void setDailyReminder(bool value) {
     _dailyReminder = value;
     AppPreferences.setDailyReminder(value);
+    if (value) {
+      NotificationService.scheduleDailyReminder();
+    } else {
+      NotificationService.cancelDailyReminder();
+    }
     notifyListeners();
   }
 }
