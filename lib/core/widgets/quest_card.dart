@@ -1,15 +1,22 @@
+import 'dart:async';
+import 'dart:math';
 import 'package:flutter/material.dart';
+import '../../shared/generation/tooltip/tooltip_phrases.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_typography.dart';
 import '../theme/app_spacing.dart';
+import 'grid_background.dart';
+import 'quest_tooltip.dart';
 
 /// Two-tone expanded quest card — lime top section + dark bottom section.
 /// Used on the Quests screen for the active quest.
-class QuestCard extends StatelessWidget {
+class QuestCard extends StatefulWidget {
   final String questTitle;
   final String description;
   final String? hint;
-  final String expiryText;
+  final DateTime expiresAt;
+  final String category;
+  final int questsInCategory;
   final bool assignedByAltrr;
   final VoidCallback? onComplete;
   final VoidCallback? onSkip;
@@ -19,11 +26,121 @@ class QuestCard extends StatelessWidget {
     required this.questTitle,
     required this.description,
     this.hint,
-    required this.expiryText,
+    required this.expiresAt,
+    required this.category,
+    this.questsInCategory = 0,
     this.assignedByAltrr = false,
     this.onComplete,
     this.onSkip,
   });
+
+  @override
+  State<QuestCard> createState() => _QuestCardState();
+}
+
+class _QuestCardState extends State<QuestCard> {
+  final _tooltipKey = GlobalKey<TooltipState>();
+  final _random = Random();
+  TooltipContent _content =
+      TooltipContent.encouragement(TooltipPhrases.encouragement[0]);
+  Timer? _timer;
+
+  @override
+  void initState() {
+    super.initState();
+    _timer = Timer.periodic(const Duration(seconds: 1), (_) {
+      if (mounted) setState(() {});
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+
+  String get _expiryText {
+    final remaining = widget.expiresAt.difference(DateTime.now());
+    if (remaining.isNegative) return 'Expired';
+    final h = remaining.inHours;
+    final m = remaining.inMinutes % 60;
+    final s = remaining.inSeconds % 60;
+    if (h >= 1) return 'Expires in ${h}h ${m}m';
+    if (m >= 1) return 'Expires in ${m}m ${s}s';
+    return 'Expires in ${s}s';
+  }
+
+  void _onInfoTap() {
+    final type = _random.nextInt(3);
+    final content = switch (type) {
+      0 => TooltipContent.encouragement(TooltipPhrases
+          .encouragement[_random.nextInt(TooltipPhrases.encouragement.length)]),
+      1 => TooltipContent.progress(
+          category: widget.category,
+          count: widget.questsInCategory,
+        ),
+      _ => TooltipContent.skip(TooltipPhrases
+          .skipReminders[_random.nextInt(TooltipPhrases.skipReminders.length)]),
+    };
+    setState(() => _content = content);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _tooltipKey.currentState?.ensureTooltipVisible();
+    });
+  }
+
+  Widget _buildTooltipContent() {
+    return switch (_content.type) {
+      TooltipContentType.encouragement => Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(_content.phrase!,
+                style: AppTypography.outfitMedium(12, AppColors.textPrimary)),
+            const SizedBox(height: 4),
+            Text('— altrr',
+                style: AppTypography.outfitMedium(11, AppColors.textMuted)),
+          ],
+        ),
+      TooltipContentType.progress => Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              "You've completed ${_content.count} ${_content.category!.toLowerCase()} quests.",
+              style: AppTypography.outfitMedium(12, AppColors.textPrimary),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              TooltipPhrases.categoryPostText(_content.count),
+              style: AppTypography.outfitMedium(12, AppColors.textMuted),
+            ),
+          ],
+        ),
+      TooltipContentType.skip => RichText(
+          text: TextSpan(
+            style: AppTypography.outfitMedium(12, AppColors.textMuted),
+            children: _buildSkipSpans(_content.phrase!),
+          ),
+        ),
+    };
+  }
+
+  List<TextSpan> _buildSkipSpans(String text) {
+    final spans = <TextSpan>[];
+    final regex = RegExp(r'[Ss]kip\w*');
+    int last = 0;
+    for (final match in regex.allMatches(text)) {
+      if (match.start > last)
+        spans.add(TextSpan(text: text.substring(last, match.start)));
+      spans.add(TextSpan(
+        text: match.group(0),
+        style: const TextStyle(color: AppColors.danger),
+      ));
+      last = match.end;
+    }
+    if (last < text.length) spans.add(TextSpan(text: text.substring(last)));
+    return spans;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -35,39 +152,45 @@ class QuestCard extends StatelessWidget {
           // Lime top
           Container(
             width: double.infinity,
-            padding: const EdgeInsets.all(AppSpacing.cardPadding),
             decoration: const BoxDecoration(
               color: AppColors.accent,
               borderRadius:
                   BorderRadius.vertical(top: Radius.circular(AppRadius.card)),
             ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
+            child: GridBackground(
+              squareSize: 28,
+              lineColor: AppColors.questCardOverlay,
+              child: Padding(
+                padding: const EdgeInsets.all(AppSpacing.cardPadding),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Container(
-                      width: 6,
-                      height: 6,
-                      decoration: const BoxDecoration(
-                        color: AppColors.questCardTextMuted,
-                        borderRadius:
-                            BorderRadius.all(Radius.circular(AppRadius.dot)),
-                      ),
+                    Row(
+                      children: [
+                        Container(
+                          width: 6,
+                          height: 6,
+                          decoration: const BoxDecoration(
+                            color: AppColors.questCardTextMuted,
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(AppRadius.dot)),
+                          ),
+                        ),
+                        const SizedBox(width: 4),
+                        Text(
+                          widget.assignedByAltrr
+                              ? 'Assigned by ALTRR'
+                              : 'Anonymously assigned',
+                          style: AppTypography.outfitSemiBold(
+                              12, AppColors.questCardTextMuted),
+                        ),
+                      ],
                     ),
-                    const SizedBox(width: 4),
-                    Text(
-                      assignedByAltrr
-                          ? 'Assigned by ALTRR'
-                          : 'Anonymously assigned',
-                      style: AppTypography.outfitSemiBold(
-                          12, AppColors.questCardTextMuted),
-                    ),
+                    const SizedBox(height: 2),
+                    Text(widget.questTitle, style: AppTypography.questTitle),
                   ],
                 ),
-                const SizedBox(height: 2),
-                Text(questTitle, style: AppTypography.questTitle),
-              ],
+              ),
             ),
           ),
           // Dark bottom
@@ -76,8 +199,8 @@ class QuestCard extends StatelessWidget {
             padding: const EdgeInsets.all(AppSpacing.cardPadding),
             decoration: const BoxDecoration(
               color: AppColors.bgPrimary,
-              borderRadius: BorderRadius.vertical(
-                  bottom: Radius.circular(AppRadius.card)),
+              borderRadius:
+                  BorderRadius.vertical(bottom: Radius.circular(AppRadius.card)),
               border: Border(
                 top: BorderSide(color: AppColors.borderSubtle),
                 left: BorderSide(color: AppColors.borderSubtle),
@@ -88,22 +211,18 @@ class QuestCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // "What you're doing" label
                 Text(
                   "WHAT YOU'RE DOING",
                   style: AppTypography.outfitBold(10, const Color(0x73C8F135))
                       .copyWith(letterSpacing: 0.9),
                 ),
                 const SizedBox(height: 4),
-                // Description
                 Text(
-                  description,
-                  style:
-                      AppTypography.outfitSemiBold(20, AppColors.textPrimary),
+                  widget.description,
+                  style: AppTypography.outfitSemiBold(20, AppColors.textPrimary),
                 ),
                 const SizedBox(height: AppSpacing.sm),
-                // Hint with left accent border — only shown when non-null
-                if (hint != null && hint!.isNotEmpty) ...[
+                if (widget.hint != null && widget.hint!.isNotEmpty) ...[
                   Container(
                     padding: const EdgeInsets.only(left: 14),
                     decoration: const BoxDecoration(
@@ -111,38 +230,57 @@ class QuestCard extends StatelessWidget {
                         left: BorderSide(color: Color(0x4DC8F135), width: 2),
                       ),
                     ),
-                    child: Text(hint!, style: AppTypography.bodyMedium),
+                    child: Text(widget.hint!, style: AppTypography.bodyMedium),
                   ),
                   const SizedBox(height: AppSpacing.sm),
                 ],
-                // Footer
                 Row(
                   children: [
                     const Icon(Icons.access_time,
                         size: 12, color: AppColors.textMuted),
                     const SizedBox(width: 5),
                     Expanded(
-                      child: Text(expiryText, style: AppTypography.bodyMedium),
+                      child: Text(_expiryText, style: AppTypography.bodyMedium),
                     ),
-                    // Skip icon button
-                    Container(
-                      width: 28,
-                      height: 28,
+                    Tooltip(
+                      key: _tooltipKey,
+                      triggerMode: TooltipTriggerMode.manual,
+                      preferBelow: false,
+                      showDuration: const Duration(seconds: 4),
                       decoration: BoxDecoration(
-                        color: AppColors.bgElevated,
-                        borderRadius:
-                            const BorderRadius.all(Radius.circular(14)),
-                        border: Border.all(color: AppColors.borderMid),
+                        color: AppColors.bgSurface,
+                        borderRadius: BorderRadius.circular(AppRadius.card),
+                        border: Border.all(color: AppColors.borderSubtle),
+                        boxShadow: const [
+                          BoxShadow(
+                            color: Color(0x33000000),
+                            blurRadius: 16,
+                            offset: Offset(0, 4),
+                          ),
+                        ],
                       ),
-                      child: IconButton(
-                        padding: EdgeInsets.zero,
-                        icon: const Icon(Icons.info_outline,
-                            size: 12, color: AppColors.textMuted),
-                        onPressed: onSkip,
+                      padding: const EdgeInsets.all(AppSpacing.cardPaddingMd),
+                      richMessage: WidgetSpan(
+                        child:
+                            SizedBox(width: 220, child: _buildTooltipContent()),
+                      ),
+                      child: GestureDetector(
+                        onTap: _onInfoTap,
+                        child: Container(
+                          width: 28,
+                          height: 28,
+                          decoration: BoxDecoration(
+                            color: AppColors.bgElevated,
+                            borderRadius:
+                                const BorderRadius.all(Radius.circular(14)),
+                            border: Border.all(color: AppColors.borderMid),
+                          ),
+                          child: const Icon(Icons.info_outline,
+                              size: 12, color: AppColors.textMuted),
+                        ),
                       ),
                     ),
                     const SizedBox(width: AppSpacing.sm),
-                    // Complete button
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.accent,
@@ -155,8 +293,9 @@ class QuestCard extends StatelessWidget {
                         ),
                         elevation: 0,
                       ),
-                      onPressed: onComplete,
-                      child: Text('Complete', style: AppTypography.ctaButton),
+                      onPressed: widget.onComplete,
+                      child:
+                          Text('Complete', style: AppTypography.ctaButton),
                     ),
                   ],
                 ),

@@ -38,11 +38,9 @@ class ProfileCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Avatar row
-          SizedBox(
-            height: 67,
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
                 // Avatar + edit badge
                 GestureDetector(
                   onTap: onEditTap,
@@ -110,6 +108,8 @@ class ProfileCard extends StatelessWidget {
                     children: [
                       Text(
                         username,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                         style: AppTypography.unboundedBlack(20, AppColors.textInverse),
                       ),
                       Text(
@@ -123,7 +123,6 @@ class ProfileCard extends StatelessWidget {
                 ),
               ],
             ),
-          ),
           const SizedBox(height: AppSpacing.lg),
           // Flavor text box
           Container(

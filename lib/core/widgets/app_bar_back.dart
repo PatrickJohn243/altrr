@@ -21,7 +21,7 @@ class AppBarBack extends StatelessWidget {
           GestureDetector(
             onTap: onBack ?? () => Navigator.of(context).pop(),
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              padding: const EdgeInsets.all(10),
               decoration: const BoxDecoration(
                 color: AppColors.bgSurface,
                 borderRadius: BorderRadius.all(Radius.circular(10)),

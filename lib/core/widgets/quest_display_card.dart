@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math';
 import 'package:flutter/material.dart';
 import '../../shared/generation/tooltip/tooltip_phrases.dart';
@@ -10,7 +11,7 @@ import 'quest_tooltip.dart';
 class QuestDisplayCard extends StatefulWidget {
   final String questTitle;
   final String description;
-  final String expiryText;
+  final DateTime expiresAt;
   final String category;
   final int questsInCategory;
   final bool assignedByAltrr;
@@ -21,7 +22,7 @@ class QuestDisplayCard extends StatefulWidget {
     super.key,
     required this.questTitle,
     required this.description,
-    required this.expiryText,
+    required this.expiresAt,
     required this.category,
     this.questsInCategory = 0,
     this.assignedByAltrr = true,
@@ -36,19 +37,46 @@ class QuestDisplayCard extends StatefulWidget {
 class _QuestDisplayCardState extends State<QuestDisplayCard> {
   final _tooltipKey = GlobalKey<TooltipState>();
   final _random = Random();
-  TooltipContent _content = TooltipContent.encouragement(TooltipPhrases.encouragement[0]);
+  TooltipContent _content =
+      TooltipContent.encouragement(TooltipPhrases.encouragement[0]);
+  Timer? _timer;
+
+  @override
+  void initState() {
+    super.initState();
+    _timer = Timer.periodic(const Duration(seconds: 1), (_) {
+      if (mounted) setState(() {});
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+
+  String get _expiryText {
+    final remaining = widget.expiresAt.difference(DateTime.now());
+    if (remaining.isNegative) return 'Expired';
+    final h = remaining.inHours;
+    final m = remaining.inMinutes % 60;
+    final s = remaining.inSeconds % 60;
+    if (h >= 1) return 'Expires in ${h}h ${m}m';
+    if (m >= 1) return 'Expires in ${m}m ${s}s';
+    return 'Expires in ${s}s';
+  }
 
   void _onInfoTap() {
     final type = _random.nextInt(3);
     final content = switch (type) {
-      0 => TooltipContent.encouragement(
-          TooltipPhrases.encouragement[_random.nextInt(TooltipPhrases.encouragement.length)]),
+      0 => TooltipContent.encouragement(TooltipPhrases.encouragement[
+          _random.nextInt(TooltipPhrases.encouragement.length)]),
       1 => TooltipContent.progress(
           category: widget.category,
           count: widget.questsInCategory,
         ),
-      _ => TooltipContent.skip(
-          TooltipPhrases.skipReminders[_random.nextInt(TooltipPhrases.skipReminders.length)]),
+      _ => TooltipContent.skip(TooltipPhrases.skipReminders[
+          _random.nextInt(TooltipPhrases.skipReminders.length)]),
     };
     setState(() => _content = content);
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -62,9 +90,11 @@ class _QuestDisplayCardState extends State<QuestDisplayCard> {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(_content.phrase!, style: AppTypography.outfitMedium(12, AppColors.textPrimary)),
+            Text(_content.phrase!,
+                style: AppTypography.outfitMedium(12, AppColors.textPrimary)),
             const SizedBox(height: 4),
-            Text('— altrr', style: AppTypography.outfitMedium(11, AppColors.textMuted)),
+            Text('— altrr',
+                style: AppTypography.outfitMedium(11, AppColors.textMuted)),
           ],
         ),
       TooltipContentType.progress => Column(
@@ -96,7 +126,8 @@ class _QuestDisplayCardState extends State<QuestDisplayCard> {
     final regex = RegExp(r'[Ss]kip\w*');
     int last = 0;
     for (final match in regex.allMatches(text)) {
-      if (match.start > last) spans.add(TextSpan(text: text.substring(last, match.start)));
+      if (match.start > last)
+        spans.add(TextSpan(text: text.substring(last, match.start)));
       spans.add(TextSpan(
         text: match.group(0),
         style: const TextStyle(color: AppColors.danger),
@@ -109,6 +140,8 @@ class _QuestDisplayCardState extends State<QuestDisplayCard> {
 
   @override
   Widget build(BuildContext context) {
+    final expired = widget.expiresAt.isBefore(DateTime.now());
+
     return ClipRRect(
       borderRadius: const BorderRadius.all(Radius.circular(AppRadius.card)),
       child: Container(
@@ -129,13 +162,17 @@ class _QuestDisplayCardState extends State<QuestDisplayCard> {
                       height: 6,
                       decoration: const BoxDecoration(
                         color: AppColors.questCardTextMuted,
-                        borderRadius: BorderRadius.all(Radius.circular(AppRadius.dot)),
+                        borderRadius: BorderRadius.all(
+                            Radius.circular(AppRadius.dot)),
                       ),
                     ),
                     const SizedBox(width: 4),
                     Text(
-                      widget.assignedByAltrr ? 'Assigned by ALTRR' : 'Anonymously assigned',
-                      style: AppTypography.outfitSemiBold(10, AppColors.questCardTextMuted),
+                      widget.assignedByAltrr
+                          ? 'Assigned by ALTRR'
+                          : 'Anonymously assigned',
+                      style: AppTypography.outfitSemiBold(
+                          10, AppColors.questCardTextMuted),
                     ),
                   ],
                 ),
@@ -144,33 +181,49 @@ class _QuestDisplayCardState extends State<QuestDisplayCard> {
                 const SizedBox(height: AppSpacing.lg),
                 Container(
                   width: double.infinity,
-                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 11),
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 14, vertical: 11),
                   decoration: const BoxDecoration(
                     color: AppColors.questCardOverlay,
-                    borderRadius: BorderRadius.all(Radius.circular(11)),
+                    borderRadius:
+                        BorderRadius.all(Radius.circular(11)),
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
                         "WHAT YOU'RE DOING —",
-                        style: AppTypography.outfitBold(12, AppColors.questCardTextDim)
+                        style: AppTypography.outfitBold(
+                                12, AppColors.questCardTextDim)
                             .copyWith(letterSpacing: 0.9),
                       ),
                       const SizedBox(height: 3),
-                      Text(widget.description, style: AppTypography.questDescription),
+                      Text(widget.description,
+                          style: AppTypography.questDescription),
                     ],
                   ),
                 ),
                 const SizedBox(height: AppSpacing.lg),
                 Row(
                   children: [
-                    const Icon(Icons.access_time, size: 12, color: AppColors.textInverse),
+                    Icon(
+                      expired
+                          ? Icons.timer_off_outlined
+                          : Icons.access_time,
+                      size: 12,
+                      color: expired
+                          ? AppColors.textInverse
+                          : AppColors.textInverse,
+                    ),
                     const SizedBox(width: 5),
                     Expanded(
                       child: Text(
-                        widget.expiryText,
-                        style: AppTypography.outfitMedium(12, AppColors.textInverse),
+                        _expiryText,
+                        style: AppTypography.outfitMedium(
+                            12,
+                            expired
+                                ? AppColors.textInverse
+                                : AppColors.textInverse),
                       ),
                     ),
                     Tooltip(
@@ -180,8 +233,10 @@ class _QuestDisplayCardState extends State<QuestDisplayCard> {
                       showDuration: const Duration(seconds: 4),
                       decoration: BoxDecoration(
                         color: AppColors.bgSurface,
-                        borderRadius: BorderRadius.circular(AppRadius.card),
-                        border: Border.all(color: AppColors.borderSubtle),
+                        borderRadius:
+                            BorderRadius.circular(AppRadius.card),
+                        border:
+                            Border.all(color: AppColors.borderSubtle),
                         boxShadow: const [
                           BoxShadow(
                             color: Color(0x33000000),
@@ -192,7 +247,9 @@ class _QuestDisplayCardState extends State<QuestDisplayCard> {
                       ),
                       padding: const EdgeInsets.all(AppSpacing.cardPaddingMd),
                       richMessage: WidgetSpan(
-                        child: SizedBox(width: 220, child: _buildTooltipContent()),
+                        child: SizedBox(
+                            width: 220,
+                            child: _buildTooltipContent()),
                       ),
                       child: GestureDetector(
                         onTap: _onInfoTap,
@@ -201,10 +258,13 @@ class _QuestDisplayCardState extends State<QuestDisplayCard> {
                           height: 28,
                           decoration: BoxDecoration(
                             color: AppColors.bgElevated,
-                            borderRadius: const BorderRadius.all(Radius.circular(14)),
-                            border: Border.all(color: AppColors.borderMid),
+                            borderRadius: const BorderRadius.all(
+                                Radius.circular(14)),
+                            border:
+                                Border.all(color: AppColors.borderMid),
                           ),
-                          child: const Icon(Icons.info_outline, size: 12, color: AppColors.textMuted),
+                          child: const Icon(Icons.info_outline,
+                              size: 12, color: AppColors.textMuted),
                         ),
                       ),
                     ),
@@ -213,16 +273,19 @@ class _QuestDisplayCardState extends State<QuestDisplayCard> {
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.bgPrimary,
                         foregroundColor: AppColors.accent,
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 9),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 9),
                         shape: const RoundedRectangleBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(AppRadius.button)),
+                          borderRadius: BorderRadius.all(
+                              Radius.circular(AppRadius.button)),
                         ),
                         elevation: 0,
                       ),
                       onPressed: widget.onComplete,
                       child: Text(
                         'Complete',
-                        style: AppTypography.ctaButton.copyWith(color: AppColors.accent),
+                        style: AppTypography.ctaButton
+                            .copyWith(color: AppColors.accent),
                       ),
                     ),
                   ],
