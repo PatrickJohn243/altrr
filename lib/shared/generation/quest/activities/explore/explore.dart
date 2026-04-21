@@ -1,0 +1,147 @@
+import '../../../core/phrase.dart';
+
+class ExploreAction {
+  static const List<Phrase> phrases = [
+    Phrase(
+      text: 'Go somewhere in your city you\'ve never been',
+      slot: PhraseSlot.action,
+      affinityTags: ['explorer', 'wanderer', 'rogue'],
+      categories: ['explore'],
+      nature: QuestNature.explore,
+      shortTitle: 'New Spot',
+    ),
+    Phrase(
+      text: 'Take a completely different route today',
+      slot: PhraseSlot.action,
+      affinityTags: ['explorer', 'trickster', 'wanderer'],
+      categories: ['explore'],
+      nature: QuestNature.explore,
+      shortTitle: 'Different Route',
+    ),
+    Phrase(
+      text: 'Visit a place you\'ve always walked past but never entered',
+      slot: PhraseSlot.action,
+      affinityTags: ['reflective', 'explorer', 'wanderer'],
+      categories: ['explore'],
+      nature: QuestNature.explore,
+      shortTitle: 'Stop and Visit',
+    ),
+    Phrase(
+      text: 'Go outside with no destination in mind',
+      slot: PhraseSlot.action,
+      affinityTags: ['rogue', 'cryptic', 'trickster', 'wanderer'],
+      categories: ['explore'],
+      nature: QuestNature.explore,
+      shortTitle: 'No Destination',
+    ),
+    Phrase(
+      text: 'Take public transport somewhere you\'ve never gone on it.',
+      slot: PhraseSlot.action,
+      affinityTags: ['wanderer', 'trickster', 'rogue'],
+      categories: ['explore'],
+      nature: QuestNature.explore,
+      shortTitle: 'Transit Wander',
+    ),
+    Phrase(
+      text: 'Walk somewhere at a time of day you normally wouldn\'t.',
+      slot: PhraseSlot.action,
+      affinityTags: ['wanderer', 'reflective', 'solemn'],
+      categories: ['explore'],
+      nature: QuestNature.explore,
+      shortTitle: 'Off-Hours Walk',
+    ),
+    Phrase(
+      text: 'Find green space you didn\'t know existed. Spend time there.',
+      slot: PhraseSlot.action,
+      affinityTags: ['wanderer', 'explorer', 'gentle'],
+      categories: ['explore'],
+      nature: QuestNature.explore,
+      shortTitle: 'Find the Green',
+    ),
+    Phrase(
+      text: 'Get on a bike and go somewhere you\'ve never cycled to.',
+      slot: PhraseSlot.action,
+      affinityTags: ['explorer', 'wanderer', 'warrior'],
+      categories: ['explore'],
+      nature: QuestNature.explore,
+      shortTitle: 'New Cycling Territory',
+      requires: 'bike',
+    ),
+    Phrase(
+      text: 'Find the highest point accessible near you. Go to it.',
+      slot: PhraseSlot.action,
+      affinityTags: ['warrior', 'explorer', 'rogue'],
+      categories: ['explore'],
+      nature: QuestNature.explore,
+      shortTitle: 'Highest Point',
+    ),
+    Phrase(
+      text: 'Spend an hour somewhere with no agenda. Just observe.',
+      slot: PhraseSlot.action,
+      affinityTags: ['sage', 'reflective', 'solemn', 'wanderer'],
+      categories: ['explore'],
+      nature: QuestNature.explore,
+      shortTitle: 'Just Observe',
+    ),
+    Phrase(
+      text: 'Drive or walk somewhere until you see something you want to stop for.',
+      slot: PhraseSlot.action,
+      affinityTags: ['wanderer', 'rogue', 'trickster', 'explorer'],
+      categories: ['explore'],
+      nature: QuestNature.explore,
+      shortTitle: 'Stop When It Calls',
+      requires: 'car',
+    ),
+
+    // ── Character lines ───────────────────────────────────────────────────────
+
+    Phrase(
+      text: 'Let the place show you something.',
+      slot: PhraseSlot.characterLine,
+      affinityTags: ['sage', 'cryptic', 'explorer', 'reflective'],
+      categories: ['explore'],
+    ),
+    Phrase(
+      text: 'Look up more than you usually do.',
+      slot: PhraseSlot.characterLine,
+      affinityTags: ['explorer', 'playful', 'trickster', 'wanderer'],
+      categories: ['explore'],
+    ),
+    Phrase(
+      text: 'Pretend you\'re seeing it for the first time.',
+      slot: PhraseSlot.characterLine,
+      affinityTags: ['playful', 'trickster', 'explorer', 'rogue'],
+      categories: ['explore'],
+    ),
+    Phrase(
+      text: 'The city has more than you think.',
+      slot: PhraseSlot.characterLine,
+      affinityTags: ['sage', 'poetic', 'solemn', 'wanderer'],
+      categories: ['explore'],
+    ),
+    Phrase(
+      text: 'You don\'t have to go far. You just have to go.',
+      slot: PhraseSlot.characterLine,
+      affinityTags: ['warm', 'mentor', 'gentle', 'caretaker'],
+      categories: ['explore'],
+    ),
+    Phrase(
+      text: 'Familiar places look different at the right time.',
+      slot: PhraseSlot.characterLine,
+      affinityTags: ['sage', 'reflective', 'solemn', 'poetic'],
+      categories: ['explore'],
+    ),
+    Phrase(
+      text: 'Novelty is a muscle. Use it.',
+      slot: PhraseSlot.characterLine,
+      affinityTags: ['warrior', 'mentor', 'competitive'],
+      categories: ['explore'],
+    ),
+    Phrase(
+      text: 'Stay curious about where you are.',
+      slot: PhraseSlot.characterLine,
+      affinityTags: ['explorer', 'playful', 'wanderer', 'sage'],
+      categories: ['explore'],
+    ),
+  ];
+}

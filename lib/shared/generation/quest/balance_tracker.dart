@@ -1,38 +1,36 @@
 import 'dart:math';
 import '../character/character_roster.dart';
+import '../core/phrase.dart';
 
 // ── Input record ──────────────────────────────────────────────────────────────
 
-/// Lightweight projection of a completed quest.
-/// No Isar dependency — the caller maps Quest objects to these before passing.
 class CompletedRecord {
   final String category;
+  final QuestNature nature;
   final DateTime completedAt;
 
   const CompletedRecord({
     required this.category,
+    required this.nature,
     required this.completedAt,
   });
 }
 
 // ── Result ────────────────────────────────────────────────────────────────────
 
-/// Everything needed to generate the next quest.
 class BalanceResult {
-  /// Category chosen by the balance algorithm.
   final String category;
-
-  /// Character whose domains include [category]. Null if roster has no match.
+  final QuestNature nature;
   final CharacterDefinition? character;
-
-  /// Weight per category at the moment of picking.
-  /// Higher = more overdue. Exposed for note generation and debugging.
   final Map<String, double> weights;
+  final Map<QuestNature, double> natureWeights;
 
   const BalanceResult({
     required this.category,
+    required this.nature,
     required this.character,
     required this.weights,
+    required this.natureWeights,
   });
 
   bool get isValid => character != null;
@@ -40,81 +38,58 @@ class BalanceResult {
 
 // ── Tracker ───────────────────────────────────────────────────────────────────
 
-/// Picks the next quest (category + character) based on neglect.
-///
-/// ## Algorithm
-/// Each category accumulates weight = days since last completion,
-/// clamped to [1, [maxDays]]. Categories never done start at [maxDays].
-/// Selection is weighted random — neglected categories win more often,
-/// but not always, so the result still feels like a whim rather than a schedule.
-///
-/// ## Usage
-/// ```dart
-/// final result = BalanceTracker.pick(
-///   history: completedQuests
-///       .map((q) => CompletedRecord(
-///             category: q.category,
-///             completedAt: q.completedAt!,
-///           ))
-///       .toList(),
-/// );
-///
-/// if (result.isValid) {
-///   final generated = QuestGenerator.generate(
-///     character: result.character!.toCharacter(),
-///     category: result.category,
-///     date: DateTime.now(),
-///   );
-/// }
-/// ```
-///
-/// Pass an empty list on first launch — all categories receive [maxDays],
-/// making the first pick uniformly random across all domains.
 class BalanceTracker {
   BalanceTracker._();
 
   static const List<String> allCategories = [
-    'physical',
-    'mental',
-    'social',
-    'cooking',
-    'learning',
-    'explore',
-    'hobby',
-    'reflection',
+    'physical', 'mental', 'social', 'cooking',
+    'learning', 'explore', 'hobby', 'reflection',
   ];
 
-  /// Categories neglected beyond this many days are treated as equally overdue.
-  /// Prevents one ignored category from permanently dominating picks.
-  static const double maxDays = 14.0;
+  static const List<QuestNature> allNatures = [
+    QuestNature.action,
+    QuestNature.social,
+    QuestNature.creative,
+    QuestNature.explore,
+  ];
+
+  /// Category neglect cap — 14 days max weight.
+  static const double maxCategoryDays = 14.0;
+
+  /// Nature neglect cap — 7 days max weight (4 natures, want faster rotation).
+  static const double maxNatureDays = 7.0;
 
   // ── Public API ─────────────────────────────────────────────────────────────
 
-  /// Picks the next (category, character) pair given completed quest [history].
   static BalanceResult pick({
     required List<CompletedRecord> history,
+    List<String>? preferredCategories,
     Random? rng,
   }) {
     final r = rng ?? Random();
-    final weights = computeWeights(history);
-    final category = _pickCategory(weights, r);
+    final weights = computeWeights(history, preferredCategories: preferredCategories);
+    final natureWeights = computeNatureWeights(history);
+
+    final category = _pickWeighted(weights.map((k, v) => MapEntry(k, v)), r);
+    final nature = _pickNature(natureWeights, r);
     final character = _pickCharacter(category, r);
+
     return BalanceResult(
       category: category,
+      nature: nature,
       character: character,
       weights: weights,
+      natureWeights: natureWeights,
     );
   }
 
-  /// Returns weight per category. Useful for testing or surfacing hints.
-  ///
-  /// Weight = fractional days since last completion, clamped to [1.0, maxDays].
-  /// A category with no history receives [maxDays].
-  static Map<String, double> computeWeights(List<CompletedRecord> history) {
+  static Map<String, double> computeWeights(
+    List<CompletedRecord> history, {
+    List<String>? preferredCategories,
+  }) {
     final now = DateTime.now();
-
-    // Most recent completion per category.
     final lastCompleted = <String, DateTime>{};
+
     for (final record in history) {
       final prev = lastCompleted[record.category];
       if (prev == null || record.completedAt.isAfter(prev)) {
@@ -123,31 +98,75 @@ class BalanceTracker {
     }
 
     return {
-      for (final cat in allCategories) cat: _weight(lastCompleted[cat], now),
+      for (final cat in allCategories)
+        cat: _categoryWeight(lastCompleted[cat], now, preferredCategories, cat),
+    };
+  }
+
+  static Map<QuestNature, double> computeNatureWeights(
+    List<CompletedRecord> history,
+  ) {
+    final now = DateTime.now();
+    final lastByNature = <QuestNature, DateTime>{};
+
+    for (final record in history) {
+      final prev = lastByNature[record.nature];
+      if (prev == null || record.completedAt.isAfter(prev)) {
+        lastByNature[record.nature] = record.completedAt;
+      }
+    }
+
+    return {
+      for (final nature in allNatures)
+        nature: _natureWeight(lastByNature[nature], now),
     };
   }
 
   // ── Private helpers ────────────────────────────────────────────────────────
 
-  static double _weight(DateTime? lastDone, DateTime now) {
-    if (lastDone == null) return maxDays;
+  static double _categoryWeight(
+    DateTime? lastDone,
+    DateTime now,
+    List<String>? preferred,
+    String category,
+  ) {
+    if (lastDone == null) return maxCategoryDays;
     final days = now.difference(lastDone).inHours / 24.0;
-    return days.clamp(1.0, maxDays);
+    double w = days.clamp(1.0, maxCategoryDays);
+    // Boost preferred categories from onboarding by 20%.
+    if (preferred != null && preferred.contains(category)) w *= 1.2;
+    return w;
   }
 
-  /// Weighted random selection from the computed weights map.
-  static String _pickCategory(Map<String, double> weights, Random rng) {
-    final total = weights.values.fold(0.0, (sum, w) => sum + w);
+  static double _natureWeight(DateTime? lastDone, DateTime now) {
+    if (lastDone == null) return maxNatureDays;
+    final days = now.difference(lastDone).inHours / 24.0;
+    return days.clamp(1.0, maxNatureDays);
+  }
+
+  static String _pickWeighted(Map<String, double> weights, Random rng) {
+    final total = weights.values.fold(0.0, (s, w) => s + w);
     var roll = rng.nextDouble() * total;
     for (final entry in weights.entries) {
       roll -= entry.value;
       if (roll <= 0) return entry.key;
     }
-    // Floating point safety — return last key if roll never hits zero.
     return weights.keys.last;
   }
 
-  /// Picks a character from the roster whose domains include [category].
+  static QuestNature _pickNature(
+    Map<QuestNature, double> weights,
+    Random rng,
+  ) {
+    final total = weights.values.fold(0.0, (s, w) => s + w);
+    var roll = rng.nextDouble() * total;
+    for (final entry in weights.entries) {
+      roll -= entry.value;
+      if (roll <= 0) return entry.key;
+    }
+    return weights.keys.last;
+  }
+
   static CharacterDefinition? _pickCharacter(String category, Random rng) {
     final candidates = CharacterRoster.forCategory(category);
     if (candidates.isEmpty) return null;

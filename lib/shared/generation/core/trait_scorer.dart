@@ -3,15 +3,12 @@ import 'phrase.dart';
 
 /// Scores phrases against a character's active trait tags and picks a winner.
 class TraitScorer {
-  /// Returns a score for [phrase] given [characterTags].
-  ///
-  /// Base weight + 1.0 per matching affinity tag.
   static double score(Phrase phrase, List<String> characterTags) {
     double s = phrase.baseWeight;
     for (final tag in phrase.affinityTags) {
       if (characterTags.contains(tag)) s += 1.0;
     }
-    return s;
+    return s < 0.1 ? 0.1 : s;
   }
 
   /// Scores all [candidates], sorts descending, then picks randomly

@@ -27,5 +27,20 @@ class PhysicalNotes {
       text: 'You\'ve been still for too long.',
       affinityTags: ['mentor', 'moderate', 'reflective'],
     ),
+    Phrase(
+      slot: PhraseSlot.note,
+      text: 'Your body\'s asking for something.',
+      affinityTags: ['warm', 'caretaker', 'gentle'],
+    ),
+    Phrase(
+      slot: PhraseSlot.note,
+      text: 'Get out of your head. Use your body.',
+      affinityTags: ['warrior', 'blunt', 'stoic'],
+    ),
+    Phrase(
+      slot: PhraseSlot.note,
+      text: 'The body fixes things the mind can\'t.',
+      affinityTags: ['sage', 'philosophical', 'solemn'],
+    ),
   ];
 }

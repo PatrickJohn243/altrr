@@ -21,7 +21,7 @@ class TooltipPhrases {
 
   static String categoryPostText(int count) {
     if (count == 0) return "This is where it starts.";
-    if (count < 5)  return "Keep showing up.";
+    if (count < 5) return "Keep showing up.";
     if (count < 10) return "You're building something.";
     if (count < 20) return "This is becoming part of you.";
     return "ALTRR has noticed.";

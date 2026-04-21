@@ -17,5 +17,20 @@ class HobbyNotes {
       text: 'Pick it back up.',
       affinityTags: ['blunt', 'warrior', 'mentor'],
     ),
+    Phrase(
+      slot: PhraseSlot.note,
+      text: 'What you enjoy deserves more of your time.',
+      affinityTags: ['caretaker', 'warm', 'gentle'],
+    ),
+    Phrase(
+      slot: PhraseSlot.note,
+      text: 'You\'re not just what you produce.',
+      affinityTags: ['sage', 'philosophical', 'solemn'],
+    ),
+    Phrase(
+      slot: PhraseSlot.note,
+      text: 'Fun isn\'t a reward for finishing. It\'s part of it.',
+      affinityTags: ['warm', 'mentor', 'gentle'],
+    ),
   ];
 }

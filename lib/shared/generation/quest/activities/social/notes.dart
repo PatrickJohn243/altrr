@@ -22,5 +22,20 @@ class SocialNotes {
       text: 'Someone out there could use you.',
       affinityTags: ['mentor', 'warm', 'philosophical'],
     ),
+    Phrase(
+      slot: PhraseSlot.note,
+      text: 'You\'ve been going through this alone.',
+      affinityTags: ['caretaker', 'warm', 'gentle'],
+    ),
+    Phrase(
+      slot: PhraseSlot.note,
+      text: 'The people in your life are still there.',
+      affinityTags: ['warm', 'sage', 'solemn'],
+    ),
+    Phrase(
+      slot: PhraseSlot.note,
+      text: 'Isolation builds quietly. Break it.',
+      affinityTags: ['warrior', 'blunt', 'solemn'],
+    ),
   ];
 }

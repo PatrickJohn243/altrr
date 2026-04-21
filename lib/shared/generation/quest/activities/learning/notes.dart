@@ -22,5 +22,20 @@ class LearningNotes {
       text: 'You\'re due for something unfamiliar.',
       affinityTags: ['trickster', 'explorer', 'playful'],
     ),
+    Phrase(
+      slot: PhraseSlot.note,
+      text: 'You haven\'t challenged your mind lately.',
+      affinityTags: ['mentor', 'scholar', 'competitive'],
+    ),
+    Phrase(
+      slot: PhraseSlot.note,
+      text: 'Curiosity doesn\'t maintain itself. Feed it.',
+      affinityTags: ['mentor', 'philosophical', 'solemn'],
+    ),
+    Phrase(
+      slot: PhraseSlot.note,
+      text: 'What do you not know yet that you should?',
+      affinityTags: ['sage', 'cryptic', 'philosophical'],
+    ),
   ];
 }

@@ -19,37 +19,25 @@ class GeneratedQuest {
   /// Maps to Quest.hint. May be null if the character stays quiet.
   final String? characterNote;
 
+  /// The nature of this quest — action, social, creative, or explore.
+  final QuestNature nature;
+
+  /// The requires key for this quest's action phrase, if any.
+  /// Maps to a [QuestPrompt] in prompts.dart.
+  final String? requires;
+
   const GeneratedQuest({
     required this.title,
     required this.questText,
+    required this.nature,
     this.characterNote,
+    this.requires,
   });
 }
 
 /// Generates quest text from a [Character], category, and date.
 ///
-/// Same character + same category + same date always produces the same
-/// output — reproducible via seeded RNG without storing intermediate state.
-///
-/// ## Usage
-/// ```dart
-/// final generated = QuestGenerator.generate(
-///   character: character,
-///   category: 'mental',
-///   date: DateTime.now(),
-/// );
-///
-/// final quest = Quest()
-///   ..title       = generated.title
-///   ..description = generated.questText
-///   ..hint        = generated.characterNote
-///   ..category    = 'mental'
-///   ..characterId = character.id
-///   ..status      = QuestStatus.active
-///   ..assignedByAltrr = true
-///   ..assignedAt  = DateTime.now()
-///   ..expiresAt   = DateTime.now().add(const Duration(hours: 24));
-/// ```
+/// Pass [DateTime.now()] as [date] to get a unique quest each call.
 class QuestGenerator {
   QuestGenerator._();
 
@@ -57,40 +45,63 @@ class QuestGenerator {
     required Character character,
     required String category,
     required DateTime date,
+    QuestNature? nature,
+    List<String> excludeRequires = const [],
   }) {
-    // Same character + same calendar day = same quest (reproducible).
-    final dayOfYear = date.difference(DateTime(date.year, 1, 1)).inDays;
-    final rng = Random(character.generationSeed ^ dayOfYear);
+    final rng = Random(character.generationSeed ^ date.millisecondsSinceEpoch);
 
     final characterTags = _tagsOf(character);
     final template = QuestTemplate.pickFor(character, rng);
 
     // ── Fill slots ───────────────────────────────────────────────────────────
 
-    final picked = <(PhraseSlot, String, String?)>[];
+    final picked = <(PhraseSlot, String, String?, QuestNature?)>[];
+    String? actionRequires;
 
     for (final slot in template.slots) {
       // Skip optional slots ~40% of the time for length variety.
       if (slot.optional && rng.nextDouble() < 0.40) continue;
 
-      final candidates = PhrasePool.forSlot(slot.slot, category: category);
+      // For action slot: filter by nature, fall back to unfiltered if empty.
+      var candidates = PhrasePool.forSlot(
+        slot.slot,
+        category: category,
+        nature: slot.slot == PhraseSlot.action ? nature : null,
+        excludeRequires: excludeRequires,
+      );
+      if (candidates.isEmpty && slot.slot == PhraseSlot.action && nature != null) {
+        candidates = PhrasePool.forSlot(
+          slot.slot,
+          category: category,
+          excludeRequires: excludeRequires,
+        );
+      }
       if (candidates.isEmpty) continue;
 
       final phrase = TraitScorer.pickWeighted(candidates, characterTags, rng);
-      picked.add((slot.slot, phrase.text, phrase.shortTitle));
+      if (slot.slot == PhraseSlot.action) actionRequires = phrase.requires;
+      picked.add((slot.slot, phrase.text, phrase.shortTitle, phrase.nature));
     }
 
     // ── Derive title from the action slot ────────────────────────────────────
 
     final title = picked
             .where((p) => p.$1 == PhraseSlot.action)
-            .map((p) => p.$3 ?? p.$2) // prefer shortTitle, fall back to text
+            .map((p) => p.$3 ?? p.$2)
             .firstOrNull ??
         category;
 
     // ── Assemble questText ───────────────────────────────────────────────────
 
     final questText = _assemble(picked);
+
+    // ── Derive nature from the picked action phrase ──────────────────────────
+
+    final derivedNature = picked
+            .where((p) => p.$1 == PhraseSlot.action)
+            .map((p) => p.$4)
+            .firstOrNull ??
+        QuestNature.action;
 
     // ── Generate character note ──────────────────────────────────────────────
 
@@ -99,26 +110,20 @@ class QuestGenerator {
     return GeneratedQuest(
       title: _capitalize(title),
       questText: questText,
+      nature: derivedNature,
       characterNote: note,
+      requires: actionRequires,
     );
   }
 
   // ── Assembly ──────────────────────────────────────────────────────────────
 
-  /// Joins phrase parts into a grammatically coherent sentence.
-  ///
-  /// Rules:
-  /// - [PhraseSlot.opener] starts the first sentence; next word is lowercased.
-  /// - [PhraseSlot.action], [PhraseSlot.duration], [PhraseSlot.setting]
-  ///   are inline — they extend the current sentence.
-  /// - [PhraseSlot.characterLine] and [PhraseSlot.closing] always start
-  ///   a new sentence.
-  static String _assemble(List<(PhraseSlot, String, String?)> parts) {
+  static String _assemble(List<(PhraseSlot, String, String?, QuestNature?)> parts) {
     final sentences = <String>[];
     var current = '';
     var afterOpener = false;
 
-    for (final (slot, text, _) in parts) {
+    for (final (slot, text, _, _) in parts) {
       switch (slot) {
         case PhraseSlot.opener:
           current = text;
@@ -135,7 +140,6 @@ class QuestGenerator {
             current += ' $text';
           }
 
-        case PhraseSlot.duration:
         case PhraseSlot.setting:
           current += ' $text';
 
@@ -164,7 +168,7 @@ class QuestGenerator {
     List<String> characterTags,
     Random rng,
   ) {
-    // 25% chance the character says nothing — silence is also a mood.
+    // 25% chance the character says nothing.
     if (rng.nextDouble() < 0.25) return null;
 
     final candidates = CharacterNotePool.forCategory(category);

@@ -1,17 +1,32 @@
 library;
 
-/// Slot types and the Phrase model used across all phrase pools.
+/// Slot types, nature types, and the Phrase model used across all phrase pools.
 ///
 /// This is the only file that other phrase files need to import.
+
+// ── Nature types ──────────────────────────────────────────────────────────────
+
+/// The kind of experience a quest demands from the user.
+/// Used as a tag on [Phrase] — not shown to the user directly.
+enum QuestNature {
+  /// Do a thing — default, most quests.
+  action,
+
+  /// Involves another person.
+  social,
+
+  /// Produces something — make, build, cook, write.
+  creative,
+
+  /// Go somewhere or try something outside normal routine.
+  explore,
+}
 
 // ── Slot types ────────────────────────────────────────────────────────────────
 
 enum PhraseSlot {
   /// The core directive: what the user will do.
   action,
-
-  /// Inline time suggestion, optional. e.g. "for 10 minutes".
-  duration,
 
   /// Where to do it, appended to action. e.g. "somewhere quiet".
   setting,
@@ -54,6 +69,16 @@ class Phrase {
   /// Used as the Quest.title in the app.
   final String? shortTitle;
 
+  /// The kind of experience this phrase demands.
+  /// Only meaningful for [PhraseSlot.action] phrases.
+  /// Null means this phrase is nature-agnostic (openers, closings, etc).
+  final QuestNature? nature;
+
+  /// Key into [QuestPrompts] — what the user must have for this quest.
+  /// Null means no prompt needed.
+  /// e.g. 'bike', 'ingredients'
+  final String? requires;
+
   const Phrase({
     required this.text,
     required this.slot,
@@ -61,5 +86,7 @@ class Phrase {
     this.categories = const [],
     this.baseWeight = 1.0,
     this.shortTitle,
+    this.nature,
+    this.requires,
   });
 }

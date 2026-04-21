@@ -27,5 +27,20 @@ class MentalNotes {
       text: 'There\'s something worth thinking about.',
       affinityTags: ['sage', 'solemn', 'warm'],
     ),
+    Phrase(
+      slot: PhraseSlot.note,
+      text: 'You\'ve been reacting instead of thinking.',
+      affinityTags: ['mentor', 'stoic', 'solemn'],
+    ),
+    Phrase(
+      slot: PhraseSlot.note,
+      text: 'Your mind\'s been loud and you\'ve been ignoring it.',
+      affinityTags: ['sage', 'reflective', 'cryptic'],
+    ),
+    Phrase(
+      slot: PhraseSlot.note,
+      text: 'When did you last slow down?',
+      affinityTags: ['warm', 'caretaker', 'solemn'],
+    ),
   ];
 }

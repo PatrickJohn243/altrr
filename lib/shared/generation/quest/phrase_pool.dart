@@ -1,33 +1,47 @@
-// Aggregator — collects all domain and shared phrase pools into a single
-// queryable interface. quest_generator.dart imports only this file.
-//
-// To add phrases: edit the relevant domain or shared file.
-// To add a new domain: create its folder, add actions.dart + notes.dart,
-// then add the class to PhrasePool.all and CharacterNotePool below.
-
 import '../core/phrase.dart';
 
-import 'activities/physical/actions.dart';
+import 'activities/physical/action.dart';
+import 'activities/physical/social.dart';
+import 'activities/physical/creative.dart';
+import 'activities/physical/explore.dart';
 import 'activities/physical/notes.dart';
-import 'activities/mental/actions.dart';
+
+import 'activities/mental/action.dart';
+import 'activities/mental/social.dart';
 import 'activities/mental/notes.dart';
-import 'activities/social/actions.dart';
+
+import 'activities/social/social.dart';
+import 'activities/social/explore.dart';
 import 'activities/social/notes.dart';
-import 'activities/cooking/actions.dart';
+
+import 'activities/cooking/action.dart';
+import 'activities/cooking/social.dart';
+import 'activities/cooking/creative.dart';
+import 'activities/cooking/explore.dart';
 import 'activities/cooking/notes.dart';
-import 'activities/learning/actions.dart';
+
+import 'activities/learning/action.dart';
+import 'activities/learning/social.dart';
+import 'activities/learning/creative.dart';
+import 'activities/learning/explore.dart';
 import 'activities/learning/notes.dart';
-import 'activities/explore/actions.dart';
+
+import 'activities/explore/explore.dart';
+import 'activities/explore/social.dart';
 import 'activities/explore/notes.dart';
-import 'activities/hobby/actions.dart';
+
+import 'activities/hobby/action.dart';
+import 'activities/hobby/social.dart';
+import 'activities/hobby/creative.dart';
+import 'activities/hobby/explore.dart';
 import 'activities/hobby/notes.dart';
-import 'activities/reflection/actions.dart';
+
+import 'activities/reflection/action.dart';
+import 'activities/reflection/creative.dart';
 import 'activities/reflection/notes.dart';
 
 import 'phrases/openers.dart';
 import 'phrases/closings.dart';
-import 'phrases/durations.dart';
-import 'phrases/settings.dart';
 import 'phrases/universal_lines.dart';
 
 export '../core/phrase.dart';
@@ -36,29 +50,76 @@ export '../core/phrase.dart';
 
 class PhrasePool {
   static const List<Phrase> all = [
-    ...PhysicalActions.phrases,
-    ...MentalActions.phrases,
-    ...SocialActions.phrases,
-    ...CookingActions.phrases,
-    ...LearningActions.phrases,
-    ...ExploreActions.phrases,
-    ...HobbyActions.phrases,
-    ...ReflectionActions.phrases,
+    // Physical
+    ...PhysicalAction.phrases,
+    ...PhysicalSocial.phrases,
+    ...PhysicalCreative.phrases,
+    ...PhysicalExplore.phrases,
+
+    // Mental
+    ...MentalAction.phrases,
+    ...MentalSocial.phrases,
+
+    // Social
+    ...SocialAction.phrases,
+    ...SocialExplore.phrases,
+
+    // Cooking
+    ...CookingAction.phrases,
+    ...CookingSocial.phrases,
+    ...CookingCreative.phrases,
+    ...CookingExplore.phrases,
+
+    // Learning
+    ...LearningAction.phrases,
+    ...LearningSocial.phrases,
+    ...LearningCreative.phrases,
+    ...LearningExplore.phrases,
+
+    // Explore
+    ...ExploreAction.phrases,
+    ...ExploreSocial.phrases,
+
+    // Hobby
+    ...HobbyAction.phrases,
+    ...HobbySocial.phrases,
+    ...HobbyCreative.phrases,
+    ...HobbyExplore.phrases,
+
+    // Reflection
+    ...ReflectionAction.phrases,
+    ...ReflectionCreative.phrases,
+
+    // Universal
     ...SharedOpeners.phrases,
     ...SharedClosings.phrases,
-    ...SharedDurations.phrases,
-    ...SharedSettings.phrases,
     ...UniversalLines.phrases,
   ];
 
-  /// Returns all phrases for [slot], optionally filtered to [category].
-  /// Phrases with an empty categories list are universal — always included.
-  static List<Phrase> forSlot(PhraseSlot slot, {String? category}) {
+  /// Returns phrases for [slot], filtered by [category], [nature], and
+  /// optionally excluding phrases whose [Phrase.requires] key is in
+  /// [excludeRequires].
+  ///
+  /// Nature filtering only applies to action slot phrases.
+  /// Phrases with empty categories list are universal — always included.
+  static List<Phrase> forSlot(
+    PhraseSlot slot, {
+    String? category,
+    QuestNature? nature,
+    List<String> excludeRequires = const [],
+  }) {
     return all.where((p) {
       if (p.slot != slot) return false;
+      if (excludeRequires.isNotEmpty &&
+          p.requires != null &&
+          excludeRequires.contains(p.requires)) return false;
       if (p.categories.isEmpty) return true;
       if (category == null) return true;
-      return p.categories.contains(category);
+      if (!p.categories.contains(category)) return false;
+      if (nature != null && slot == PhraseSlot.action && p.nature != null) {
+        return p.nature == nature;
+      }
+      return true;
     }).toList();
   }
 }

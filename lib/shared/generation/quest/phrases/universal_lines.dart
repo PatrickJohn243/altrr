@@ -63,5 +63,50 @@ class UniversalLines {
       slot: PhraseSlot.characterLine,
       affinityTags: ['warrior', 'competitive', 'demanding', 'stoic'],
     ),
+    Phrase(
+      text: 'Finish what you start.',
+      slot: PhraseSlot.characterLine,
+      affinityTags: ['warrior', 'mentor', 'stoic', 'competitive'],
+    ),
+    Phrase(
+      text: 'You\'ve done harder things.',
+      slot: PhraseSlot.characterLine,
+      affinityTags: ['warrior', 'mentor', 'warm', 'demanding'],
+    ),
+    Phrase(
+      text: 'The resistance is the point.',
+      slot: PhraseSlot.characterLine,
+      affinityTags: ['sage', 'philosophical', 'warrior', 'solemn'],
+    ),
+    Phrase(
+      text: 'Small moves compound.',
+      slot: PhraseSlot.characterLine,
+      affinityTags: ['mentor', 'moderate', 'solemn', 'philosophical'],
+    ),
+    Phrase(
+      text: 'Don\'t wait for the right time.',
+      slot: PhraseSlot.characterLine,
+      affinityTags: ['warrior', 'blunt', 'mentor', 'demanding'],
+    ),
+    Phrase(
+      text: 'You have everything you need.',
+      slot: PhraseSlot.characterLine,
+      affinityTags: ['warm', 'caretaker', 'mentor', 'gentle'],
+    ),
+    Phrase(
+      text: 'This is one of those small things that adds up.',
+      slot: PhraseSlot.characterLine,
+      affinityTags: ['mentor', 'solemn', 'moderate', 'philosophical'],
+    ),
+    Phrase(
+      text: 'One thing. That\'s all.',
+      slot: PhraseSlot.characterLine,
+      affinityTags: ['blunt', 'warrior', 'stoic', 'brief'],
+    ),
+    Phrase(
+      text: 'You get out of it what you put in.',
+      slot: PhraseSlot.characterLine,
+      affinityTags: ['mentor', 'moderate', 'stoic', 'competitive'],
+    ),
   ];
 }

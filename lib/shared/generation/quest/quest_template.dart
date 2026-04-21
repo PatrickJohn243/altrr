@@ -58,7 +58,6 @@ class QuestTemplate {
   static const _warrior = [
     QuestTemplate([
       TemplateSlot(PhraseSlot.action),
-      TemplateSlot(PhraseSlot.duration, optional: true),
       TemplateSlot(PhraseSlot.characterLine),
     ]),
     QuestTemplate([
@@ -89,7 +88,6 @@ class QuestTemplate {
     QuestTemplate([
       TemplateSlot(PhraseSlot.opener, optional: true),
       TemplateSlot(PhraseSlot.action),
-      TemplateSlot(PhraseSlot.duration),
       TemplateSlot(PhraseSlot.characterLine),
     ]),
     QuestTemplate([
@@ -130,7 +128,6 @@ class QuestTemplate {
       TemplateSlot(PhraseSlot.opener),
       TemplateSlot(PhraseSlot.action),
       TemplateSlot(PhraseSlot.setting, optional: true),
-      TemplateSlot(PhraseSlot.duration, optional: true),
       TemplateSlot(PhraseSlot.characterLine),
       TemplateSlot(PhraseSlot.closing),
     ]),
@@ -141,7 +138,6 @@ class QuestTemplate {
     QuestTemplate([
       TemplateSlot(PhraseSlot.opener, optional: true),
       TemplateSlot(PhraseSlot.action),
-      TemplateSlot(PhraseSlot.duration, optional: true),
       TemplateSlot(PhraseSlot.characterLine),
     ]),
     QuestTemplate([
