@@ -55,6 +55,19 @@ class AlertService {
         ],
       );
 
+  static Future<void> upcoming(
+    BuildContext context, {
+    required String feature,
+  }) =>
+      show(
+        context,
+        title: 'Coming soon',
+        message: '$feature isn\'t available yet — it\'s on the way.',
+        actions: [
+          const AlertAction(label: 'Got it'),
+        ],
+      );
+
   static Future<void> gotIt(
     BuildContext context, {
     required String title,
