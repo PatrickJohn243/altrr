@@ -21,6 +21,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   // Step 2 — Name
   final _nameController = TextEditingController();
+  final _nameFocusNode = FocusNode();
 
   String? _photoPath;
   final _selectedCategories = <String>{};
@@ -29,12 +30,24 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   void dispose() {
     _pageController.dispose();
     _nameController.dispose();
+    _nameFocusNode.dispose();
     super.dispose();
   }
 
   void _next() {
     if (_currentPage < 3) {
+      FocusScope.of(context).unfocus();
       _pageController.nextPage(
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+      );
+    }
+  }
+
+  void _back() {
+    if (_currentPage > 0) {
+      FocusScope.of(context).unfocus();
+      _pageController.previousPage(
         duration: const Duration(milliseconds: 300),
         curve: Curves.easeInOut,
       );
@@ -79,16 +92,45 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.bgPrimary,
+      resizeToAvoidBottomInset: false,
       body: SafeArea(
         child: Column(
           children: [
-            // Progress dots
+            // Progress dots + back button
             Padding(
               padding: const EdgeInsets.only(top: 24, bottom: 8),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children:
-                    List.generate(4, (i) => _Dot(active: i == _currentPage)),
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  if (_currentPage > 0)
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: Padding(
+                        padding: const EdgeInsets.only(left: AppSpacing.screenPadding),
+                        child: GestureDetector(
+                          onTap: _back,
+                          child: Container(
+                            width: 36,
+                            height: 36,
+                            decoration: BoxDecoration(
+                              color: AppColors.bgSurface,
+                              borderRadius: BorderRadius.circular(AppRadius.button),
+                              border: Border.all(color: AppColors.borderMid),
+                            ),
+                            child: const Icon(
+                              Icons.arrow_back_ios_new,
+                              size: 14,
+                              color: AppColors.textMuted,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: List.generate(4, (i) => _Dot(active: i == _currentPage)),
+                  ),
+                ],
               ),
             ),
 
@@ -97,10 +139,17 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               child: PageView(
                 controller: _pageController,
                 physics: const NeverScrollableScrollPhysics(),
-                onPageChanged: (i) => setState(() => _currentPage = i),
+                onPageChanged: (i) {
+                  setState(() => _currentPage = i);
+                  if (i == 1) {
+                    Future.delayed(const Duration(milliseconds: 350), () {
+                      if (mounted) _nameFocusNode.requestFocus();
+                    });
+                  }
+                },
                 children: [
                   _WelcomePage(onNext: _next),
-                  _NamePage(controller: _nameController),
+                  _NamePage(controller: _nameController, focusNode: _nameFocusNode),
                   _PhotoPage(
                       photoPath: _photoPath, onPick: _pickPhoto, onNext: _next),
                   _CategoriesPage(
@@ -272,7 +321,8 @@ class _FeatureRow extends StatelessWidget {
 
 class _NamePage extends StatelessWidget {
   final TextEditingController controller;
-  const _NamePage({required this.controller});
+  final FocusNode focusNode;
+  const _NamePage({required this.controller, required this.focusNode});
 
   @override
   Widget build(BuildContext context) {
@@ -290,7 +340,7 @@ class _NamePage extends StatelessWidget {
           const SizedBox(height: AppSpacing.xxl),
           TextField(
             controller: controller,
-            autofocus: true,
+            focusNode: focusNode,
             style: AppTypography.outfitSemiBold(16, AppColors.textPrimary),
             cursorColor: AppColors.accent,
             decoration: InputDecoration(
