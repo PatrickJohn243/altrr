@@ -19,6 +19,9 @@ import '../../features/home/pages/edit_profile/edit_profile_screen.dart';
 import '../../features/home/pages/all_titles/all_titles_screen.dart';
 import '../../features/quests/pages/all_quests/all_quests_screen.dart';
 import '../../features/home/pages/title_detail/title_detail_screen.dart';
+import '../../features/home/pages/stats/stats_screen.dart';
+import '../../features/quests/pages/challenge_quest/challenge_quest_screen.dart';
+import '../../features/settings/pages/quest_preferences/quest_preferences_screen.dart';
 import '../../shared/models/quest.dart';
 import '../../shared/models/earned_title.dart';
 
@@ -109,6 +112,19 @@ GoRouter createAppRouter(UserProfileController profileController) => GoRouter(
       path: '/title',
       builder: (context, state) =>
           TitleDetailScreen(title: state.extra as EarnedTitle),
+    ),
+    GoRoute(
+      path: '/stats',
+      builder: (context, state) => const StatsScreen(),
+    ),
+    GoRoute(
+      path: '/challenge',
+      builder: (context, state) =>
+          ChallengeQuestScreen(quest: state.extra as Quest),
+    ),
+    GoRoute(
+      path: '/quest-preferences',
+      builder: (context, state) => const QuestPreferencesScreen(),
     ),
   ],
 );
