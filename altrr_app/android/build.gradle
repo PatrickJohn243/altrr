@@ -1,0 +1,27 @@
+allprojects {
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
+
+rootProject.buildDir = "../build"
+subprojects {
+    project.buildDir = "${rootProject.buildDir}/${project.name}"
+}
+subprojects {
+    project.evaluationDependsOn(":app")
+}
+
+subprojects { project ->
+    project.plugins.withId("com.android.library") {
+        def androidExt = project.extensions.findByName("android")
+        if (androidExt != null && androidExt.namespace == null) {
+            androidExt.namespace = project.group ?: "com.example.${project.name}"
+        }
+    }
+}
+
+tasks.register("clean", Delete) {
+    delete rootProject.buildDir
+}

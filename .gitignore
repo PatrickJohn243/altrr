@@ -1,0 +1,22 @@
+# Excluded folders
+altrr_vault/
+.vscode/
+
+# Flutter / Dart
+altrr_app/.dart_tool/
+altrr_app/.flutter-plugins
+altrr_app/.flutter-plugins-dependencies
+altrr_app/build/
+altrr_app/.packages
+altrr_app/pubspec.lock.bak
+
+# Secrets
+altrr_app/env.json
+
+# Isar generated
+altrr_app/**/*.g.dart
+altrr_app/**/*.isar
+
+# OS
+.DS_Store
+Thumbs.db

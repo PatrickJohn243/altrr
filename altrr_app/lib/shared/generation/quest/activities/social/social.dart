@@ -1,0 +1,145 @@
+import '../../../core/phrase.dart';
+
+class SocialAction {
+  static const List<Phrase> phrases = [
+    Phrase(
+      text: 'Call someone you care about',
+      slot: PhraseSlot.action,
+      affinityTags: ['warm', 'caretaker', 'socialFocus'],
+      categories: ['social'],
+      nature: QuestNature.social,
+      shortTitle: 'Make a Call',
+    ),
+    Phrase(
+      text: 'Reach out to someone you haven\'t spoken to in a while',
+      slot: PhraseSlot.action,
+      affinityTags: ['warm', 'reflective', 'caretaker'],
+      categories: ['social'],
+      nature: QuestNature.social,
+      shortTitle: 'Reconnect',
+    ),
+    Phrase(
+      text: 'Check in on someone. Mean it.',
+      slot: PhraseSlot.action,
+      affinityTags: ['caretaker', 'warm', 'gentle'],
+      categories: ['social'],
+      nature: QuestNature.social,
+      shortTitle: 'Check In',
+    ),
+    Phrase(
+      text: 'Send a message to someone you\'ve been meaning to reach out to',
+      slot: PhraseSlot.action,
+      affinityTags: ['warm', 'gentle', 'reflective'],
+      categories: ['social'],
+      nature: QuestNature.social,
+      shortTitle: 'Send a Message',
+    ),
+    Phrase(
+      text: 'Spend real time with someone today. No phones.',
+      slot: PhraseSlot.action,
+      affinityTags: ['caretaker', 'warm', 'solemn'],
+      categories: ['social'],
+      nature: QuestNature.social,
+      shortTitle: 'Quality Time',
+    ),
+    Phrase(
+      text: 'Have lunch or dinner with someone, not alone.',
+      slot: PhraseSlot.action,
+      affinityTags: ['warm', 'caretaker', 'socialFocus'],
+      categories: ['social'],
+      nature: QuestNature.social,
+      shortTitle: 'Eat Together',
+    ),
+    Phrase(
+      text: 'Tell someone something you appreciate about them. Be specific.',
+      slot: PhraseSlot.action,
+      affinityTags: ['warm', 'caretaker', 'solemn'],
+      categories: ['social'],
+      nature: QuestNature.social,
+      shortTitle: 'Say It',
+    ),
+    Phrase(
+      text: 'Ask a family member how they\'re really doing.',
+      slot: PhraseSlot.action,
+      affinityTags: ['caretaker', 'warm', 'reflective', 'gentle'],
+      categories: ['social'],
+      nature: QuestNature.social,
+      shortTitle: 'Family Check-In',
+    ),
+    Phrase(
+      text: 'Apologize to someone you\'ve been meaning to apologize to.',
+      slot: PhraseSlot.action,
+      affinityTags: ['warrior', 'solemn', 'stoic', 'blunt'],
+      categories: ['social'],
+      nature: QuestNature.social,
+      shortTitle: 'Say Sorry',
+    ),
+    Phrase(
+      text: 'Do something kind for someone without being asked.',
+      slot: PhraseSlot.action,
+      affinityTags: ['caretaker', 'warm', 'gentle'],
+      categories: ['social'],
+      nature: QuestNature.social,
+      shortTitle: 'Unsolicited Kindness',
+    ),
+    Phrase(
+      text: 'Sit with someone and just be present. No agenda.',
+      slot: PhraseSlot.action,
+      affinityTags: ['warm', 'caretaker', 'solemn', 'gentle'],
+      categories: ['social'],
+      nature: QuestNature.social,
+      shortTitle: 'Just Be There',
+    ),
+
+    // ── Character lines ───────────────────────────────────────────────────────
+
+    Phrase(
+      text: 'The conversation doesn\'t have to go anywhere.',
+      slot: PhraseSlot.characterLine,
+      affinityTags: ['warm', 'caretaker', 'gentle'],
+      categories: ['social'],
+    ),
+    Phrase(
+      text: 'Just be there. That\'s enough.',
+      slot: PhraseSlot.characterLine,
+      affinityTags: ['warm', 'caretaker', 'solemn', 'gentle'],
+      categories: ['social'],
+    ),
+    Phrase(
+      text: 'Say something real.',
+      slot: PhraseSlot.characterLine,
+      affinityTags: ['warrior', 'blunt', 'solemn', 'stoic'],
+      categories: ['social'],
+    ),
+    Phrase(
+      text: 'People remember who shows up.',
+      slot: PhraseSlot.characterLine,
+      affinityTags: ['mentor', 'solemn', 'philosophical', 'warm'],
+      categories: ['social'],
+    ),
+    Phrase(
+      text: 'Most people are waiting to be asked.',
+      slot: PhraseSlot.characterLine,
+      affinityTags: ['sage', 'warm', 'reflective', 'philosophical'],
+      categories: ['social'],
+    ),
+    Phrase(
+      text: 'You don\'t have to fix anything. Just listen.',
+      slot: PhraseSlot.characterLine,
+      affinityTags: ['warm', 'caretaker', 'gentle', 'mentor'],
+      categories: ['social'],
+    ),
+    Phrase(
+      text: 'Showing up is the rare thing.',
+      slot: PhraseSlot.characterLine,
+      affinityTags: ['sage', 'solemn', 'mentor'],
+      categories: ['social'],
+    ),
+    Phrase(
+      text: 'You\'ll be glad you reached out.',
+      slot: PhraseSlot.characterLine,
+      affinityTags: ['warm', 'caretaker', 'gentle'],
+      categories: ['social'],
+    ),
+  ];
+}

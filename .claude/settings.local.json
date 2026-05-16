@@ -1,0 +1,23 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__figma-remote-mcp__get_design_context",
+      "Bash(flutter pub:*)",
+      "Bash(git init:*)",
+      "Bash(git remote:*)",
+      "Bash(git add:*)",
+      "Bash(git commit -m 'feat: initial commit of Altrr Flutter app:*)",
+      "Bash(flutter analyze:*)",
+      "Bash(cp -r C:/Users/ASUS/altrr/altrr_app/lib/shared/generation/activities C:/Users/ASUS/altrr/altrr_app/lib/shared/generation/quest/activities)",
+      "Bash(cp 'C:/Users/ASUS/altrr/altrr_app/lib/shared/generation/shared/*.dart' C:/Users/ASUS/altrr/altrr_app/lib/shared/generation/quest/phrases/)",
+      "Bash(sed -i 's|import '\\\\''../activities/|import '\\\\''activities/|g' C:/Users/ASUS/altrr/altrr_app/lib/shared/generation/quest/phrase_pool.dart)",
+      "Bash(sed -i 's|import '\\\\''../shared/|import '\\\\''phrases/|g' C:/Users/ASUS/altrr/altrr_app/lib/shared/generation/quest/phrase_pool.dart)",
+      "Bash(sed -i \"s|import '../../shared/characters/character_roster.dart'|import '../../shared/generation/character/character_roster.dart'|g\" \"C:/Users/ASUS/altrr/altrr_app/lib/core/database/isar_service.dart\")",
+      "Bash(sed -i \"s|import '../../../shared/generation/balance/balance_tracker.dart'|import '../../../shared/generation/quest/balance_tracker.dart'|g\" \"C:/Users/ASUS/altrr/altrr_app/lib/features/quests/controllers/quests_controller.dart\")",
+      "Bash(dart run:*)",
+      "Bash(del \"C:\\\\Users\\\\ASUS\\\\altrr\\\\altrr_app\\\\lib\\\\core\\\\data\\\\quest_card_copy.dart\")",
+      "Bash(dart analyze:*)",
+      "Bash(git commit *)"
+    ]
+  }
+}
